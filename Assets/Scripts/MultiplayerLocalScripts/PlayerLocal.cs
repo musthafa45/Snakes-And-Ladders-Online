@@ -12,7 +12,7 @@ public class PlayerLocal : NetworkBehaviour
 {
     private DiceBoard diceBoard;
     [SerializeField] 
-    private float speed = 10f;
+    //private float speed = 10f;
     private int standingTileId = 1;
     private bool isMovingBack = false;
 
