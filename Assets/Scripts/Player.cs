@@ -7,7 +7,7 @@ using Unity.Netcode;
 public class Player : NetworkBehaviour
 {
     private DiceBoard diceBoard;
-    [SerializeField] private float speed = 10f;
+    //[SerializeField] private float speed = 10f;
     private Tile standingTile;
     private bool isMovingBack = false;
     private List<Tile> tiles = new(100);
