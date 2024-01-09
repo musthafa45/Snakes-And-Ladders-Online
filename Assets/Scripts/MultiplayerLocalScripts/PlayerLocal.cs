@@ -2,8 +2,6 @@ using DG.Tweening;
 using PathCreation.Examples;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -21,6 +19,7 @@ public class PlayerLocal : NetworkBehaviour
     private Action OnPlayerReachedTargetTile;
     private PathFollower pathFollower;
     private string playerName;
+
 
     public override void OnNetworkSpawn()
     {

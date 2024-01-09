@@ -63,17 +63,17 @@ public class UiManager : NetworkBehaviour
 
     private void Start()
     {
-        if (PlayersInputHandler.Instance.GetFirstPlayPlayerId() == 1)
-        {
-            //EnableFirstPlayerDisableSecond();
-            EnableFirstPlayerDisableSecondServerRpc();
+        //if (PlayersInputHandler.Instance.GetFirstPlayPlayerId() == 1)
+        //{
+        //    //EnableFirstPlayerDisableSecond();
+        //    EnableFirstPlayerDisableSecondServerRpc();
 
-        }
-        else if(PlayersInputHandler.Instance.GetFirstPlayPlayerId() == 2)
-        {
-            //EnableSecondPlayerDisableFirst();
-            EnableSecondPlayerDisableFirstServerRpc();
-        }
+        //}
+        //else if(PlayersInputHandler.Instance.GetFirstPlayPlayerId() == 2)
+        //{
+        //    //EnableSecondPlayerDisableFirst();
+        //    EnableSecondPlayerDisableFirstServerRpc();
+        //}
 
         player1NameTextMeshProGui.text = player1?.GetPlayerName();
         player2NameTextMeshProGui.text = player2?.GetPlayerName();
