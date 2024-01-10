@@ -10,12 +10,14 @@ public class GameManager : NetworkBehaviour
 
     public event Action<bool> OnLocalPlayerReadyChanged;
 
+    private Dictionary<ulong, bool> playerReadyDictionary;
     [SerializeField] private PlayMode playMode;
     private bool isLocalPlayerReady = false;
 
     private void Awake()
     {
         Instance = this;
+        playerReadyDictionary = new Dictionary<ulong, bool>();
 
         if (PlayerPrefs.GetInt("PlayMode") == 1)
         {
@@ -42,26 +44,43 @@ public class GameManager : NetworkBehaviour
 
     private void PlayerInputHandler_OnPlayerReady(object sender, EventArgs e)
     {
-        if (!IsOwner) return;
-
         isLocalPlayerReady = true;
         OnLocalPlayerReadyChanged?.Invoke(isLocalPlayerReady);
 
+        //Debug.Log("Clients Total " + NetworkManager.Singleton.ConnectedClients.Count);
         SetPlayerReadyServerRpc();
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void SetPlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
     {
-        Debug.Log(serverRpcParams.Receive.SenderClientId);
-        SetPlayerReadyClientRpc();
+        ulong senderClientId = serverRpcParams.Receive.SenderClientId;
+        playerReadyDictionary[senderClientId] = true;
+
+        bool allClientsReady = true;
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            if (!playerReadyDictionary.ContainsKey(clientId) || !playerReadyDictionary[clientId])
+            {
+                // Player is not ready or not found in the dictionary
+                allClientsReady = false;
+                break;
+            }
+        }
+
+        if (allClientsReady && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
+        {
+            Debug.Log("Start Match");
+        }
+        //SetPlayerReadyClientRpc();
     }
 
-    [ClientRpc]
-    private void SetPlayerReadyClientRpc(ClientRpcParams clientRpcParams = default)
-    {
-        Debug.Log(clientRpcParams.Send.TargetClientIds);
-    }
+
+    //[ClientRpc]
+    //private void SetPlayerReadyClientRpc(ClientRpcParams clientRpcParams = default)
+    //{
+    //    Debug.Log(clientRpcParams.Send.TargetClientIds);
+    //}
 
     public bool IsLocalPlayerReady() => isLocalPlayerReady;
    
