@@ -11,11 +11,11 @@ public class DiceRollHandler : MonoBehaviour
     
     private void OnEnable()
     {
-        EventManager.Instance.OnDiceRollButtonPerformed += EventManager_Instance_OnDiceRolled;
+        //EventManager.Instance.OnDiceRollButtonPerformed += EventManager_Instance_OnDiceRolled;
     }
     private void OnDisable()
     {
-        EventManager.Instance.OnDiceRollButtonPerformed -= EventManager_Instance_OnDiceRolled;
+        //EventManager.Instance.OnDiceRollButtonPerformed -= EventManager_Instance_OnDiceRolled;
     }
 
     private void EventManager_Instance_OnDiceRolled(object sender, EventManager.OnDiceRollButtonPerformedArgs e)

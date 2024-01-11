@@ -6,17 +6,21 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    public static GameManager LocalInstance { get; private set; }
 
-    public event Action<bool> OnLocalPlayerReadyChanged;
+    public static event Action<GameManager> OnAnyGameManagerSpawned;
+    public event EventHandler OnStartMatchPerformed;
 
     private Dictionary<ulong, bool> playerReadyDictionary;
     [SerializeField] private PlayMode playMode;
-    private bool isLocalPlayerReady = false;
 
-    private void Awake()
+    public override void OnNetworkSpawn()
     {
-        Instance = this;
+        if (IsOwner)
+        {
+            LocalInstance = this;
+        }
+
         playerReadyDictionary = new Dictionary<ulong, bool>();
 
         if (PlayerPrefs.GetInt("PlayMode") == 1)
@@ -31,23 +35,39 @@ public class GameManager : NetworkBehaviour
         {
             playMode = PlayMode.MultiplayerOnline;
         }
+
+        TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn += TestingNetCodeUI_OnPlayerClickedHostOrClientBtn;
+        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+
+        OnAnyGameManagerSpawned?.Invoke(this);
     }
 
-    private void Start()
+    public override void OnNetworkDespawn()
     {
-        PlayersInputHandler.Instance.OnPlayerReady += PlayerInputHandler_OnPlayerReady;
+        
     }
+
+    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
+    {
+        SetPlayerReadyAndTryStartMatch();
+
+        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
+        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+    }
+
+    private void TestingNetCodeUI_OnPlayerClickedHostOrClientBtn(object sender, EventArgs e)
+    {
+        Debug.Log("Clients Total " + NetworkManager.Singleton.ConnectedClients.Count);
+        SetPlayerReadyServerRpc();
+    }
+
     private void OnDisable()
     {
-        PlayersInputHandler.Instance.OnPlayerReady -= PlayerInputHandler_OnPlayerReady;
+        TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn -= TestingNetCodeUI_OnPlayerClickedHostOrClientBtn;
     }
 
-    private void PlayerInputHandler_OnPlayerReady(object sender, EventArgs e)
+    public void SetPlayerReadyAndTryStartMatch()
     {
-        isLocalPlayerReady = true;
-        OnLocalPlayerReadyChanged?.Invoke(isLocalPlayerReady);
-
-        //Debug.Log("Clients Total " + NetworkManager.Singleton.ConnectedClients.Count);
         SetPlayerReadyServerRpc();
     }
 
@@ -68,25 +88,27 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        if (allClientsReady && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
-        {
-            Debug.Log("Start Match");
-        }
-        //SetPlayerReadyClientRpc();
+        CheckMatchCanBeStart(allClientsReady);
     }
 
+    private void CheckMatchCanBeStart(bool allClientsReady)
+    {
+        if (allClientsReady && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
+        {
+            StartMatchClientRpc(NetworkManager.Singleton.ConnectedClientsIds[0],
+                NetworkManager.Singleton.ConnectedClientsIds[1]);
+        }
+    }
 
-    //[ClientRpc]
-    //private void SetPlayerReadyClientRpc(ClientRpcParams clientRpcParams = default)
-    //{
-    //    Debug.Log(clientRpcParams.Send.TargetClientIds);
-    //}
-
-    public bool IsLocalPlayerReady() => isLocalPlayerReady;
-   
-    public void SetPlayMode(PlayMode playMode) => this.playMode = playMode;
+    [ClientRpc]
+    private void StartMatchClientRpc(ulong player1, ulong player2)
+    {
+        Debug.Log($"Start Match In Both in Player {player1} And {player2}");
+        OnStartMatchPerformed?.Invoke(this, EventArgs.Empty);
+    }
 
     public PlayMode GetPlayMode() => playMode;
+
 }
 public enum PlayMode
 {

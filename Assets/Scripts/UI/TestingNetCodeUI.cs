@@ -17,18 +17,16 @@ public class TestingNetCodeUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        ShowUi();
+
 
         startHostBtn.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartHost();
 
             HideUi();
+            OnPlayerClickedHostOrClientBtn?.Invoke(this,EventArgs.Empty);
 
-            OnPlayerClickedHostOrClientBtn?.Invoke(this, EventArgs.Empty);
-
-            Debug.Log("HideUi(); performed");
-            //WaitigForOpponentUI.Instance.ShowWaitingForOpponentUI();
-            //GameStartManager.Instance.SetPlayerReady(NetworkManager.Singleton.LocalClientId);
         });
 
         startClientBtn.onClick.AddListener(() =>
@@ -36,18 +34,23 @@ public class TestingNetCodeUI : MonoBehaviour
             NetworkManager.Singleton.StartClient();
 
             HideUi();
-
             OnPlayerClickedHostOrClientBtn?.Invoke(this, EventArgs.Empty);
 
-            Debug.Log("HideUi(); performed");
-
-            //WaitigForOpponentUI.Instance.ShowWaitingForOpponentUI();
-            //GameStartManager.Instance.SetPlayerReady(NetworkManager.Singleton.LocalClientId);
         });
+    }
+
+    private void OnDisable()
+    {
+        startHostBtn.onClick.RemoveAllListeners();
+        startClientBtn.onClick.RemoveAllListeners();
     }
 
     private void HideUi()
     {
         menuUiTransform.gameObject.SetActive(false);
+    }
+    private void ShowUi()
+    {
+        menuUiTransform.gameObject.SetActive(true);
     }
 }

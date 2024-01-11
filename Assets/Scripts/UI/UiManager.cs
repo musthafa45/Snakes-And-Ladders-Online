@@ -35,7 +35,7 @@ public class UiManager : NetworkBehaviour
             {
                 EnableSecondPlayerDisableFirst();
 
-                if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerCom)
+                if (GameManager.LocalInstance.GetPlayMode() == PlayMode.MultiplayerCom)
                 {
                     rollButtonPlayer2.onClick.Invoke();
                 }
@@ -136,8 +136,8 @@ public class UiManager : NetworkBehaviour
 
     private void OnEnable()
     {
-        EventManager.Instance.OnDiceRolled += EventManager_Instance_OnDiceRolled;
-        EventManager.Instance.OnPlayerWon += EventManager_Instance_OnPlayerWon;
+        //EventManager.Instance.OnDiceRolled += EventManager_Instance_OnDiceRolled;
+        //EventManager.Instance.OnPlayerWon += EventManager_Instance_OnPlayerWon;
         //EventManager.Instance.OnPlayerStartedMoving += EventManager_Instance_OnPlayerStartedMoving;
         //EventManager.Instance.OnPlayerStoppedMoving += EventManager_Instance_OnPlayerStoppedMoving;
     }
@@ -167,8 +167,8 @@ public class UiManager : NetworkBehaviour
 
     private void OnDisable()
     {
-        EventManager.Instance.OnDiceRolled -= EventManager_Instance_OnDiceRolled;
-        EventManager.Instance.OnPlayerWon -= EventManager_Instance_OnPlayerWon;
+        //EventManager.Instance.OnDiceRolled -= EventManager_Instance_OnDiceRolled;
+        //EventManager.Instance.OnPlayerWon -= EventManager_Instance_OnPlayerWon;
         //EventManager.Instance.OnPlayerStartedMoving -= EventManager_Instance_OnPlayerStartedMoving;
         //EventManager.Instance.OnPlayerStoppedMoving -= EventManager_Instance_OnPlayerStoppedMoving;
         //rollButton.onClick.RemoveAllListeners();

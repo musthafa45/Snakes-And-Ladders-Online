@@ -14,19 +14,17 @@ public class WaitigForOpponentUI : MonoBehaviour
     {
         HideWaitingForOpponentUI();
 
-        GameManager.Instance.OnLocalPlayerReadyChanged += GameManager_OnLocalPlayerReadyChanged;
-    }
-    private void OnDisable()
-    {
-        GameManager.Instance.OnLocalPlayerReadyChanged -= GameManager_OnLocalPlayerReadyChanged;
+        TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn += Testing_NetCodeUI_OnPlayerClickedHostOrClientBtn;
     }
 
-    private void GameManager_OnLocalPlayerReadyChanged(bool isPlayerReady)
+    private void Testing_NetCodeUI_OnPlayerClickedHostOrClientBtn(object sender, System.EventArgs e)
     {
-        if (isPlayerReady)
-        {
-            ShowWaitingForOpponentUI();
-        }
+        ShowWaitingForOpponentUI();
+    }
+
+    private void OnDisable()
+    {
+        TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn -= Testing_NetCodeUI_OnPlayerClickedHostOrClientBtn;
     }
 
     public void ShowWaitingForOpponentUI()

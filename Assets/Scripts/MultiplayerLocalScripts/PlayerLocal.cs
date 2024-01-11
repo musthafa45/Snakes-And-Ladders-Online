@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class PlayerLocal : NetworkBehaviour
 {
+    public static event EventHandler OnAnyPlayerSpawned;
+
     private DiceBoard diceBoard;
     [SerializeField] 
     //private float speed = 10f;
@@ -32,40 +34,42 @@ public class PlayerLocal : NetworkBehaviour
 
         transform.position = diceBoard.GetStartPosition();
 
-        if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerCom && playerId == 1)
-        {
-            playerName = "Player" + UnityEngine.Random.Range(100, 1000);
-        }
+        //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerCom && playerId == 1)
+        //{
+        //    playerName = "Player" + UnityEngine.Random.Range(100, 1000);
+        //}
 
-        if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerCom && playerId == 2)
-        {
-            playerName = "Guest" + UnityEngine.Random.Range(100, 1000);
-        }
+        //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerCom && playerId == 2)
+        //{
+        //    playerName = "Guest" + UnityEngine.Random.Range(100, 1000);
+        //}
 
-        if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerLocal && playerId == 1)
-        {
-            playerName = "Player" + UnityEngine.Random.Range(100, 1000);
-        }
+        //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerLocal && playerId == 1)
+        //{
+        //    playerName = "Player" + UnityEngine.Random.Range(100, 1000);
+        //}
 
-        if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerLocal && playerId == 2)
-        {
-            playerName = "Player" + UnityEngine.Random.Range(100, 1000);
-        }
+        //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerLocal && playerId == 2)
+        //{
+        //    playerName = "Player" + UnityEngine.Random.Range(100, 1000);
+        //}
 
-        if(NetworkManager.Singleton.LocalClientId == 0)
+        if (NetworkManager.Singleton.LocalClientId == 0)
         {
             playerId = 1;
         }
-        else if(NetworkManager.Singleton.LocalClientId == 1)
+        else if (NetworkManager.Singleton.LocalClientId == 1)
         {
             playerId = 2;
         }
 
-        EventManager.Instance.OnDiceRolled += EventManager_Instance_OnDiceRolled;
-        EventManager.Instance.OnDiceRollButtonPerformed += EventManager_Instance_OnDiceRollButtonPerformed;
+        //EventManager.Instance.OnDiceRolled += EventManager_Instance_OnDiceRolled;
+        //EventManager.Instance.OnDiceRollButtonPerformed += EventManager_Instance_OnDiceRollButtonPerformed;
 
         pathFollower.pathCreator = null;
         pathFollower.CanMove = false;
+
+        OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
     }
     private void Awake()
     {
@@ -91,7 +95,7 @@ public class PlayerLocal : NetworkBehaviour
 
     private void OnDisable()
     {
-        EventManager.Instance.OnDiceRolled -= EventManager_Instance_OnDiceRolled;
+        //EventManager.Instance.OnDiceRolled -= EventManager_Instance_OnDiceRolled;
     }
 
     private void EventManager_Instance_OnDiceRolled(object sender, EventManager.OnDicerolledArgs e)
