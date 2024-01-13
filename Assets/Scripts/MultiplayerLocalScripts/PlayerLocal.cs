@@ -90,13 +90,13 @@ public class PlayerLocal : NetworkBehaviour
     {
         if(NetworkManager.Singleton.LocalClientId == (ulong)rolledPlayerId)
         {
-            DoMovePlayerWith();
+            DoMovePlayerWith(diceFaceValue);
         }
     }
 
-    private void DoMovePlayerWith()
+    private void DoMovePlayerWith(short diceFaceValue)
     {
-        Debug.Log("Moving Player With Id Of " + NetworkManager.Singleton.LocalClientId);
+        Debug.Log($"Moving Player With Id Of { NetworkManager.Singleton.LocalClientId} ,And Face Value Of {diceFaceValue}");
     }
 
     private void Awake()

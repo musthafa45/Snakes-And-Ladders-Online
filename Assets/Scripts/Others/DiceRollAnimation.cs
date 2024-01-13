@@ -17,7 +17,7 @@ public class DiceRollAnimation : MonoBehaviour
     private IEnumerator RollAnim(Action<short> onRollFinishedWithFaceValueOut)
     {
         float elapsedTime = 0f;
-        float duration = 3f; // Set the duration of the roll illusion
+        float duration = 1.2f; // Set the duration of the roll illusion
 
         while (elapsedTime < duration)
         {
@@ -25,7 +25,7 @@ public class DiceRollAnimation : MonoBehaviour
             diceButtonImage.sprite = GetRandomDiceData().diceFaceSprite;
 
             // Wait for a short time before the next change
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.08f);
 
             // Update the elapsed time
             elapsedTime += 0.1f;
