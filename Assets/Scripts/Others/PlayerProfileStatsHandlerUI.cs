@@ -20,6 +20,39 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
                 InitializePlayerSelectedProfile(selectedPlayerId);
             };
         };
+
+        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+    }
+
+    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
+    {
+        PlayerLocal.OnPlayerReachedTargetTileWithPlayerId += PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
+    }
+
+    private void PlayerLocal_OnPlayerReachedTargetTileWithPlayerId(short playerId)
+    {
+        InitializePlayerSelectedProfileRevert(playerId);
+    }
+    private void OnDisable()
+    {
+        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
+        PlayerLocal.OnPlayerReachedTargetTileWithPlayerId -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
+    }
+
+    private void InitializePlayerSelectedProfileRevert(short selectedPlayerId)
+    {
+        for (int i = 0; i < playerProfileSingleUIList.Count; i++)
+        {
+            if (playerProfileSingleUIList[i].GetPlayerConnectedId() == selectedPlayerId)
+            {
+                playerProfileSingleUIList[i].ButtonInteractableEnabled(false);
+                playerProfileSingleUIList[i].ButtonAccessbilityCheckRevert(); // Double Check Has Turn Access
+            }
+            else
+            {
+                playerProfileSingleUIList[i].ButtonInteractableEnabled(true);
+            }
+        }
     }
 
     private void InitializePlayerSelectedProfile(short selectedPlayerId)

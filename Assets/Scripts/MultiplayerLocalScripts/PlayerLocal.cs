@@ -17,9 +17,9 @@ public class PlayerLocal : NetworkBehaviour
     private int standingTileId = 1;
     private bool isMovingBack = false;
 
-    [SerializeField] private int playerId;
+    private short playerId;
 
-    private Action OnPlayerReachedTargetTile;
+    public static event Action<short> OnPlayerReachedTargetTileWithPlayerId;
     private PathFollower pathFollower;
     private string playerName;
 
@@ -88,83 +88,53 @@ public class PlayerLocal : NetworkBehaviour
 
     private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId, short diceFaceValue)
     {
-        if(NetworkManager.Singleton.LocalClientId == (ulong)rolledPlayerId)
+        if (!IsOwner) return;
+
+        if (NetworkManager.Singleton.LocalClientId == (ulong)rolledPlayerId)
         {
-            DoMovePlayerWith(diceFaceValue);
+            DoMovePlayer(diceFaceValue);
         }
     }
 
-    private void DoMovePlayerWith(short diceFaceValue)
+    private void DoMovePlayer(short diceFaceValue)
     {
-        Debug.Log($"Moving Player With Id Of { NetworkManager.Singleton.LocalClientId} ,And Face Value Of {diceFaceValue}");
-    }
-
-    private void Awake()
-    {
-        //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerOnline && !IsHost) Destroy(this.gameObject);
-    }
-
-    private void EventManager_Instance_OnDiceRollButtonPerformed(object sender, EventManager.OnDiceRollButtonPerformedArgs e)
-    {
-        if (!IsOwner) return;
-
-        if (e.diceRolledPlayerId == playerId)
-        {
-            this.OnPlayerReachedTargetTile = e.OnPlayerMovedSuccessfully; // we Need Moved After Callback For Button Interactable 
-        }
-
-    }
-
-    private void OnDisable()
-    {
-        //EventManager.Instance.OnDiceRolled -= EventManager_Instance_OnDiceRolled;
-    }
-
-    private void EventManager_Instance_OnDiceRolled(object sender, EventManager.OnDicerolledArgs e)
-    {
-        if (!IsOwner) return;
-
-        if (e.diceRolledPlayerId != this.playerId) return;
-
         if (!isMovingBack) // is Moving Now 1 to 100
         {
-            bool validTargetindex = standingTileId + e.diceFaceValue <= 100;
+            bool validTargetindex = standingTileId + diceFaceValue <= 100;
 
             if (validTargetindex)
             {
-                StartCoroutine(MoveOneByOne(e.diceFaceValue));
+                StartCoroutine(MoveOneByOne(diceFaceValue));
             }
             else
             {
                 Debug.LogWarning("Index Out Of Bound");
-                EventManager.Instance.InvokePlayerStoppedMoving();
-                OnPlayerReachedTargetTile();
-                EventManager.Instance.InvokeMoveOutOfBound();
+                //EventManager.Instance.InvokePlayerStoppedMoving();
+                OnPlayerReachedTargetTileWithPlayerId?.Invoke(playerId);
+                //EventManager.Instance.InvokeMoveOutOfBound();
             }
         }
         else
         {
-            bool validTargetindex = standingTileId - e.diceFaceValue >= 0f;
+            bool validTargetindex = standingTileId - diceFaceValue >= 0f;
 
             if (validTargetindex)
             {
-                StartCoroutine(MoveOneByOne(e.diceFaceValue));
+                StartCoroutine(MoveOneByOne(diceFaceValue));
             }
             else
             {
                 Debug.LogWarning("Index Out Of Bound");
-                EventManager.Instance.InvokePlayerStoppedMoving();
-                OnPlayerReachedTargetTile();
-                EventManager.Instance.InvokeMoveOutOfBound();
+                //EventManager.Instance.InvokePlayerStoppedMoving();
+                OnPlayerReachedTargetTileWithPlayerId?.Invoke(playerId);
+                //EventManager.Instance.InvokeMoveOutOfBound();
             }
         }
-
-
     }
 
     private IEnumerator MoveOneByOne(int targetTileIndex)
     {
-        EventManager.Instance.InvokePlayerStartedMoving();
+        //EventManager.Instance.InvokePlayerStartedMoving();
 
         int targetTileId = 0;
         for (int i = 0; i < targetTileIndex; i++)
@@ -201,8 +171,9 @@ public class PlayerLocal : NetworkBehaviour
             });
         }
 
-        EventManager.Instance.InvokePlayerStoppedMoving();
-        OnPlayerReachedTargetTile?.Invoke(); // this Is For Enable Disable Roll Dice Button
+        //EventManager.Instance.InvokePlayerStoppedMoving();
+        OnPlayerReachedTargetTileWithPlayerId?.Invoke(playerId);
+        // this Is For Enable Disable Roll Dice Button
         standingTileId = targetTileId;
 
         if (diceBoard.GetAllTile()[^1].GetTileId() == targetTileId)
@@ -217,7 +188,7 @@ public class PlayerLocal : NetworkBehaviour
             if (/*standingTileId - targetTileIndex == 0*/ standingTileId == 1)
             {
                 isMovingBack = false;
-                EventManager.Instance.InvokePlayerWin();
+                //EventManager.Instance.InvokePlayerWin();
                 Debug.Log("Player Win");
             }
         }

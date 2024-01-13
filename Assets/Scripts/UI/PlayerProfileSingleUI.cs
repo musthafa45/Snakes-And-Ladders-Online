@@ -41,6 +41,10 @@ public class PlayerProfileSingleUI : MonoBehaviour
     {
         rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId == playerConnectedId;
     }
+    public void ButtonAccessbilityCheckRevert()
+    {
+        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId != playerConnectedId;
+    }
 
     private void UpdateSelectedVisual(bool canInteractable)
     {
@@ -53,4 +57,6 @@ public class PlayerProfileSingleUI : MonoBehaviour
             diceSelectorVisual.StopVisual();
         }
     }
+
+   
 }
