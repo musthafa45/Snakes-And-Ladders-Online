@@ -12,7 +12,7 @@ public class GameManager : NetworkBehaviour
 
     private Dictionary<ulong, bool> playerReadyDictionary;
     [SerializeField] private PlayMode playMode;
-    private short currentSelectedPlayerId;
+    private short FirstMovePlayerId;
 
     public override void OnNetworkSpawn()
     {
@@ -88,23 +88,19 @@ public class GameManager : NetworkBehaviour
         {
             if (IsServer)
             {
-                currentSelectedPlayerId = (short)UnityEngine.Random.Range(0, 2);
-                Debug.Log("Current Selected Is  :" + currentSelectedPlayerId);
+                FirstMovePlayerId = (short)UnityEngine.Random.Range(0, 2);
+                Debug.Log("Current Selected Is  :" + FirstMovePlayerId);
             }
 
-            StartMatchClientRpc(NetworkManager.Singleton.ConnectedClientsIds[0],
-                                NetworkManager.Singleton.ConnectedClientsIds[1],currentSelectedPlayerId);
+            StartMatchClientRpc(FirstMovePlayerId);
         }
     }
 
     [ClientRpc]
-    private void StartMatchClientRpc(ulong player1, ulong player2,short selectedPlayerId)
+    private void StartMatchClientRpc(short firstMovePlayerId)
     {
-        Debug.Log($"Start Match In Both in Player {player1} And {player2}");
-        OnStartMatchPerformed?.Invoke(selectedPlayerId);
+        OnStartMatchPerformed?.Invoke(firstMovePlayerId);
     }
-
-
 
     public PlayMode GetPlayMode() => playMode;
 

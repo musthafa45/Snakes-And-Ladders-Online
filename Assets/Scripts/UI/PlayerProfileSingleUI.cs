@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,10 +28,15 @@ public class PlayerProfileSingleUI : MonoBehaviour
     {
         rollButton.interactable = canInteractable;
 
-        UpdateVisual(canInteractable);
+        UpdateSelectedVisual(canInteractable);
     }
 
-    private void UpdateVisual(bool canInteractable)
+    public void ButtonAccessbilityCheck()
+    {
+        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId == playerConnectedId ? true : false;
+    }
+
+    private void UpdateSelectedVisual(bool canInteractable)
     {
         if (canInteractable)
         {

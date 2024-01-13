@@ -8,6 +8,7 @@ using UnityEngine;
 
 public class PlayerLocal : NetworkBehaviour
 {
+    public static PlayerLocal LocalInstance { get; private set; }
     public static event EventHandler OnAnyPlayerSpawned;
 
     private DiceBoard diceBoard;
@@ -25,6 +26,11 @@ public class PlayerLocal : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        if(IsOwner)
+        {
+            LocalInstance = this;
+        }
+
         if (!IsOwner) return;
 
         base.OnNetworkSpawn();

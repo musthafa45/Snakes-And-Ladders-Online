@@ -29,6 +29,7 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
             if (playerProfileSingleUIList[i].GetPlayerConnectedId() == selectedPlayerId)
             {
                 playerProfileSingleUIList[i].ButtonInteractableEnabled(true);
+                playerProfileSingleUIList[i].ButtonAccessbilityCheck(); // Double Check Has Turn Access
             }
             else
             {
