@@ -5,20 +5,26 @@ using UnityEngine.UI;
 
 public class PlayerProfileSingleUI : MonoBehaviour
 {
-    public static event Action<short> OnAnyPlayerPressedRollButton; //with Player id
+    public static event Action<short,short> OnAnyPlayerPressedRollButton; //with Player id And Dice Face Value
     [SerializeField]
     private Button rollButton;
     [SerializeField] private short playerConnectedId;
     
     private DiceSelectorVisual diceSelectorVisual;
+    private DiceRollAnimation diceRollAnimation;
 
     private void Awake()
     {
         diceSelectorVisual = rollButton.gameObject.GetComponentInChildren<DiceSelectorVisual>();
+        diceRollAnimation = rollButton.gameObject.GetComponentInChildren<DiceRollAnimation>();
 
         rollButton.onClick.AddListener(() =>
         {
-            OnAnyPlayerPressedRollButton?.Invoke(playerConnectedId);
+            diceRollAnimation.RollDice((OnDiceRolledFaceValue) =>
+            {
+                OnAnyPlayerPressedRollButton?.Invoke(playerConnectedId,OnDiceRolledFaceValue);
+            });
+            
         });
         
     }
@@ -33,7 +39,7 @@ public class PlayerProfileSingleUI : MonoBehaviour
 
     public void ButtonAccessbilityCheck()
     {
-        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId == playerConnectedId ? true : false;
+        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId == playerConnectedId;
     }
 
     private void UpdateSelectedVisual(bool canInteractable)

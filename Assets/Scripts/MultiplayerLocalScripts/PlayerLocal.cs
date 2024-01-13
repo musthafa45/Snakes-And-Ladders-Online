@@ -86,7 +86,7 @@ public class PlayerLocal : NetworkBehaviour
         PlayerProfileSingleUI.OnAnyPlayerPressedRollButton -= PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
     }
 
-    private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId)
+    private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId, short diceFaceValue)
     {
         if(NetworkManager.Singleton.LocalClientId == (ulong)rolledPlayerId)
         {
@@ -102,12 +102,6 @@ public class PlayerLocal : NetworkBehaviour
     private void Awake()
     {
         //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerOnline && !IsHost) Destroy(this.gameObject);
-
-       
-    }
-    private void OnEnable()
-    {
-        
     }
 
     private void EventManager_Instance_OnDiceRollButtonPerformed(object sender, EventManager.OnDiceRollButtonPerformedArgs e)

@@ -2263,7 +2263,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 958150165}
   m_Father: {fileID: 1149642449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2633,6 +2634,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 946801881}
   m_CullTransparentMesh: 1
+--- !u!1 &958150164
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 958150165}
+  - component: {fileID: 958150166}
+  m_Layer: 5
+  m_Name: Dice Roll Animation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &958150165
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 958150164}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 672415155}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &958150166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 958150164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f16e32de0f490b54d8eb6520939df33b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  diceButtonImage: {fileID: 1149642451}
+  diceDataList:
+  - diceFaceSprite: {fileID: 21300000, guid: 019099d65b04003479b229a724c69639, type: 3}
+    diceFaceValue: 1
+  - diceFaceSprite: {fileID: 21300000, guid: 2d55728080fa35c40918b05ad2f3bc4a, type: 3}
+    diceFaceValue: 2
+  - diceFaceSprite: {fileID: 21300000, guid: ccc3b4c23afef75418814f4a1b8a2241, type: 3}
+    diceFaceValue: 3
+  - diceFaceSprite: {fileID: 21300000, guid: d4c2de8b15fca634b8c2ffe1aeb74b7f, type: 3}
+    diceFaceValue: 4
+  - diceFaceSprite: {fileID: 21300000, guid: 0bff93e1a8dab794cb5840d49886aba7, type: 3}
+    diceFaceValue: 5
+  - diceFaceSprite: {fileID: 21300000, guid: 448fbdd61e70b764ab3804821df342fd, type: 3}
+    diceFaceValue: 6
 --- !u!1 &1025718038
 GameObject:
   m_ObjectHideFlags: 0
@@ -3834,7 +3897,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00005340576
+      value: -0.000015258789
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4422,6 +4485,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2134130881}
+  - {fileID: 1590060586}
   m_Father: {fileID: 1986206395}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
@@ -5236,6 +5300,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1590060585
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1590060586}
+  - component: {fileID: 1590060587}
+  m_Layer: 5
+  m_Name: Dice Roll Animation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1590060586
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590060585}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1154926597}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1590060587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590060585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f16e32de0f490b54d8eb6520939df33b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  diceButtonImage: {fileID: 1154926599}
+  diceDataList:
+  - diceFaceSprite: {fileID: 21300000, guid: 019099d65b04003479b229a724c69639, type: 3}
+    diceFaceValue: 1
+  - diceFaceSprite: {fileID: 21300000, guid: 2d55728080fa35c40918b05ad2f3bc4a, type: 3}
+    diceFaceValue: 2
+  - diceFaceSprite: {fileID: 21300000, guid: ccc3b4c23afef75418814f4a1b8a2241, type: 3}
+    diceFaceValue: 3
+  - diceFaceSprite: {fileID: 21300000, guid: d4c2de8b15fca634b8c2ffe1aeb74b7f, type: 3}
+    diceFaceValue: 4
+  - diceFaceSprite: {fileID: 21300000, guid: 0bff93e1a8dab794cb5840d49886aba7, type: 3}
+    diceFaceValue: 5
+  - diceFaceSprite: {fileID: 21300000, guid: 448fbdd61e70b764ab3804821df342fd, type: 3}
+    diceFaceValue: 6
 --- !u!114 &1625079824 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114462757500385858, guid: 2791553a612d84e7c9f3c0a95308376f, type: 3}
