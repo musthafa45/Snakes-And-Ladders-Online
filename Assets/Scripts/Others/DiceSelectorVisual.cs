@@ -20,7 +20,6 @@ public class DiceSelectorVisual : MonoBehaviour
 
         transform.localScale = Vector3.one;
         tweener = transform.DOScale(1.07f,0.5f).SetEase(Ease.InOutSine).SetLoops(-1,LoopType.Yoyo);
-
     }
 
     [ContextMenu("StopVisual")]

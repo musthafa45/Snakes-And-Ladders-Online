@@ -29,31 +29,31 @@ public class UiManager : NetworkBehaviour
 
     private void Awake()
     {
-        rollButtonPlayer1.onClick.AddListener(() =>
-        {
-            EventManager.Instance.InvokeOnDiceRollBtnPressed(1,() =>
-            {
-                EnableSecondPlayerDisableFirst();
+        //rollButtonPlayer1.onClick.AddListener(() =>
+        //{
+        //    EventManager.Instance.InvokeOnDiceRollBtnPressed(1,() =>
+        //    {
+        //        EnableSecondPlayerDisableFirst();
 
-                if (GameManager.LocalInstance.GetPlayMode() == PlayMode.MultiplayerCom)
-                {
-                    rollButtonPlayer2.onClick.Invoke();
-                }
-            });
+        //        if (GameManager.LocalInstance.GetPlayMode() == PlayMode.MultiplayerCom)
+        //        {
+        //            rollButtonPlayer2.onClick.Invoke();
+        //        }
+        //    });
 
-            DisableInteractionOnPlayer1();
+        //    DisableInteractionOnPlayer1();
 
-        });
+        //});
 
-        rollButtonPlayer2.onClick.AddListener(() =>
-        {
-            EventManager.Instance.InvokeOnDiceRollBtnPressed(2, () =>
-            {
-                EnableFirstPlayerDisableSecond();
-            });
+        //rollButtonPlayer2.onClick.AddListener(() =>
+        //{
+        //    EventManager.Instance.InvokeOnDiceRollBtnPressed(2, () =>
+        //    {
+        //        EnableFirstPlayerDisableSecond();
+        //    });
 
-            DisableInteractionOnPlayer2();
-        });
+        //    DisableInteractionOnPlayer2();
+        //});
 
         menuButton.onClick.AddListener(() =>
         {

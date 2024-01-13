@@ -8,14 +8,10 @@ public class DiceRollHandler : MonoBehaviour
     private readonly int diceRollPossibilities = 6; //Six Faces 
     private int previousSelectedNumber = 0;
 
-    
-    private void OnEnable()
+
+    private void Start()
     {
-        //EventManager.Instance.OnDiceRollButtonPerformed += EventManager_Instance_OnDiceRolled;
-    }
-    private void OnDisable()
-    {
-        //EventManager.Instance.OnDiceRollButtonPerformed -= EventManager_Instance_OnDiceRolled;
+        
     }
 
     private void EventManager_Instance_OnDiceRolled(object sender, EventManager.OnDiceRollButtonPerformedArgs e)

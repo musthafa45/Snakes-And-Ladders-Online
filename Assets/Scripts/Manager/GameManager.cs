@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,10 +8,11 @@ public class GameManager : NetworkBehaviour
     public static GameManager LocalInstance { get; private set; }
 
     public static event Action<GameManager> OnAnyGameManagerSpawned;
-    public event EventHandler OnStartMatchPerformed;
+    public event Action<short> OnStartMatchPerformed; //With Client Id Selected
 
     private Dictionary<ulong, bool> playerReadyDictionary;
     [SerializeField] private PlayMode playMode;
+    private short currentSelectedPlayerId;
 
     public override void OnNetworkSpawn()
     {
@@ -39,12 +39,7 @@ public class GameManager : NetworkBehaviour
         TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn += TestingNetCodeUI_OnPlayerClickedHostOrClientBtn;
         PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
 
-        OnAnyGameManagerSpawned?.Invoke(this);
-    }
-
-    public override void OnNetworkDespawn()
-    {
-        
+        OnAnyGameManagerSpawned?.Invoke(this as GameManager);
     }
 
     private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
@@ -88,24 +83,28 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        CheckMatchCanBeStart(allClientsReady);
-    }
-
-    private void CheckMatchCanBeStart(bool allClientsReady)
-    {
+        // To Start Match
         if (allClientsReady && NetworkManager.Singleton.ConnectedClientsIds.Count == 2)
         {
+            if (IsServer)
+            {
+                currentSelectedPlayerId = (short)UnityEngine.Random.Range(0, 2);
+                Debug.Log("Current Selected Is  :" + currentSelectedPlayerId);
+            }
+
             StartMatchClientRpc(NetworkManager.Singleton.ConnectedClientsIds[0],
-                NetworkManager.Singleton.ConnectedClientsIds[1]);
+                                NetworkManager.Singleton.ConnectedClientsIds[1],currentSelectedPlayerId);
         }
     }
 
     [ClientRpc]
-    private void StartMatchClientRpc(ulong player1, ulong player2)
+    private void StartMatchClientRpc(ulong player1, ulong player2,short selectedPlayerId)
     {
         Debug.Log($"Start Match In Both in Player {player1} And {player2}");
-        OnStartMatchPerformed?.Invoke(this, EventArgs.Empty);
+        OnStartMatchPerformed?.Invoke(selectedPlayerId);
     }
+
+
 
     public PlayMode GetPlayMode() => playMode;
 

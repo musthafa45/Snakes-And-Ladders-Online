@@ -56,11 +56,11 @@ public class PlayerLocal : NetworkBehaviour
 
         if (NetworkManager.Singleton.LocalClientId == 0)
         {
-            playerId = 1;
+            playerId = 0;
         }
         else if (NetworkManager.Singleton.LocalClientId == 1)
         {
-            playerId = 2;
+            playerId = 1;
         }
 
         //EventManager.Instance.OnDiceRolled += EventManager_Instance_OnDiceRolled;
@@ -70,7 +70,29 @@ public class PlayerLocal : NetworkBehaviour
         pathFollower.CanMove = false;
 
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
+
+        PlayerProfileSingleUI.OnAnyPlayerPressedRollButton += PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
     }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        PlayerProfileSingleUI.OnAnyPlayerPressedRollButton -= PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
+    }
+
+    private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId)
+    {
+        if(NetworkManager.Singleton.LocalClientId == (ulong)rolledPlayerId)
+        {
+            DoMovePlayerWith();
+        }
+    }
+
+    private void DoMovePlayerWith()
+    {
+        Debug.Log("Moving Player With Id Of " + NetworkManager.Singleton.LocalClientId);
+    }
+
     private void Awake()
     {
         //if (GameManager.Instance.GetPlayMode() == PlayMode.MultiplayerOnline && !IsHost) Destroy(this.gameObject);
