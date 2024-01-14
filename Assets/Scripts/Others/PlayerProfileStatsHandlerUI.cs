@@ -1,15 +1,23 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerProfileStatsHandlerUI : MonoBehaviour
+public class PlayerProfileStatsHandlerUI : NetworkBehaviour
 {
     [SerializeField] private GameObject playersProfileStatsParent;
     [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList;
 
-    private void Start()
+    private void Awake()
     {
         Hide();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner) return;
+
+        //Hide();
 
         GameManager.OnAnyGameManagerSpawned += (gameManager) =>
         {
@@ -31,7 +39,7 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
 
     private void PlayerLocal_OnPlayerReachedTargetTileWithPlayerId(short playerId)
     {
-        InitializePlayerSelectedProfileRevert(playerId);
+        InitializePlayerSelectedProfileRevertServerRpc(playerId);
     }
     private void OnDisable()
     {
@@ -39,7 +47,14 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
         PlayerLocal.OnPlayerReachedTargetTileWithPlayerId -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
     }
 
-    private void InitializePlayerSelectedProfileRevert(short selectedPlayerId)
+    [ServerRpc(RequireOwnership = false)]
+    private void InitializePlayerSelectedProfileRevertServerRpc(short selectedPlayerId)
+    {
+        InitializePlayerSelectedProfileRevertClientRpc(selectedPlayerId);
+    }
+
+    [ClientRpc]
+    private void InitializePlayerSelectedProfileRevertClientRpc(short selectedPlayerId)
     {
         for (int i = 0; i < playerProfileSingleUIList.Count; i++)
         {
