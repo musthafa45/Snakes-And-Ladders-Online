@@ -16,11 +16,11 @@ public class WaitigForOpponentUI : MonoBehaviour
 
         TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn += Testing_NetCodeUI_OnPlayerClickedHostOrClientBtn;
 
-        GameManager.OnAnyGameManagerSpawned += (gameManager) =>
+        GameManager.OnAnyGameManagerSpawned += (localGameManager) =>
         {
-            gameManager.GetComponent<GameManager>().OnStartMatchPerformed += (selectedPlayerId) => { 
+            GameManager.LocalInstance.OnStartMatchPerformed += (selectedPlayerId) => { 
                 HideWaitingForOpponentUI(); 
-            }; //GameManager_LocalInstance_OnStartMatchPerformed;
+            };
         };
     }
 

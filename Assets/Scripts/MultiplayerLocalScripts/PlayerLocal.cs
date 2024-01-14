@@ -9,7 +9,9 @@ using UnityEngine;
 public class PlayerLocal : NetworkBehaviour
 {
     public static PlayerLocal LocalInstance { get; private set; }
-    public static event EventHandler OnAnyPlayerSpawned;
+
+    public static event Action<short> OnAnyPlayerSpawned;
+    public static event Action<short> OnAnyPlayerReachedTargetTile;
 
     private DiceBoard diceBoard;
     [SerializeField] 
@@ -17,12 +19,9 @@ public class PlayerLocal : NetworkBehaviour
     private int standingTileId = 1;
     private bool isMovingBack = false;
 
-    private short playerId;
-
-    public static event Action<short> OnPlayerReachedTargetTileWithPlayerId;
+    //private short playerId;
     private PathFollower pathFollower;
     private string playerName;
-
 
     public override void OnNetworkSpawn()
     {
@@ -32,8 +31,6 @@ public class PlayerLocal : NetworkBehaviour
         }
 
         if (!IsOwner) return;
-
-        base.OnNetworkSpawn();
 
         diceBoard = FindObjectOfType<DiceBoard>();
         pathFollower = GetComponent<PathFollower>();
@@ -60,29 +57,29 @@ public class PlayerLocal : NetworkBehaviour
         //    playerName = "Player" + UnityEngine.Random.Range(100, 1000);
         //}
 
-        if (NetworkManager.Singleton.LocalClientId == 0)
-        {
-            playerId = 0;
-        }
-        else if (NetworkManager.Singleton.LocalClientId == 1)
-        {
-            playerId = 1;
-        }
+        //if (NetworkManager.Singleton.LocalClientId == 0)
+        //{
+        //    playerId = 0;
+        //}
+        //else if (NetworkManager.Singleton.LocalClientId == 1)
+        //{
+        //    playerId = 1;
+        //}
 
         //EventManager.Instance.OnDiceRolled += EventManager_Instance_OnDiceRolled;
         //EventManager.Instance.OnDiceRollButtonPerformed += EventManager_Instance_OnDiceRollButtonPerformed;
+        //Debug.Log(" Player Id Is "+ playerId);
 
         pathFollower.pathCreator = null;
         pathFollower.CanMove = false;
 
-        OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
+        OnAnyPlayerSpawned?.Invoke((short)NetworkManager.Singleton.LocalClientId);
 
         PlayerProfileSingleUI.OnAnyPlayerPressedRollButton += PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
     }
 
     public override void OnNetworkDespawn()
     {
-        base.OnNetworkDespawn();
         PlayerProfileSingleUI.OnAnyPlayerPressedRollButton -= PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
     }
 
@@ -110,7 +107,7 @@ public class PlayerLocal : NetworkBehaviour
             {
                 Debug.LogWarning("Index Out Of Bound");
                 //EventManager.Instance.InvokePlayerStoppedMoving();
-                OnPlayerReachedTargetTileWithPlayerId?.Invoke(playerId);
+                OnAnyPlayerReachedTargetTile?.Invoke((short)NetworkManager.Singleton.LocalClientId);
                 //EventManager.Instance.InvokeMoveOutOfBound();
             }
         }
@@ -126,7 +123,7 @@ public class PlayerLocal : NetworkBehaviour
             {
                 Debug.LogWarning("Index Out Of Bound");
                 //EventManager.Instance.InvokePlayerStoppedMoving();
-                OnPlayerReachedTargetTileWithPlayerId?.Invoke(playerId);
+                OnAnyPlayerReachedTargetTile?.Invoke((short)NetworkManager.Singleton.LocalClientId);
                 //EventManager.Instance.InvokeMoveOutOfBound();
             }
         }
@@ -171,8 +168,7 @@ public class PlayerLocal : NetworkBehaviour
             });
         }
 
-        //EventManager.Instance.InvokePlayerStoppedMoving();
-        OnPlayerReachedTargetTileWithPlayerId?.Invoke(playerId);
+        GameManager.LocalInstance.SetPlayerSuccessfullyMoved((short)NetworkManager.Singleton.LocalClientId);
         // this Is For Enable Disable Roll Dice Button
         standingTileId = targetTileId;
 
