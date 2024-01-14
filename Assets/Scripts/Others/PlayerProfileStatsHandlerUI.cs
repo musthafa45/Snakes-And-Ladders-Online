@@ -1,23 +1,15 @@
 using System;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerProfileStatsHandlerUI : NetworkBehaviour
+public class PlayerProfileStatsHandlerUI : MonoBehaviour
 {
     [SerializeField] private GameObject playersProfileStatsParent;
     [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList;
 
-    private void Awake()
+    private void Start()
     {
         Hide();
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        if (!IsOwner) return;
-
-        //Hide();
 
         GameManager.OnAnyGameManagerSpawned += (gameManager) =>
         {
@@ -39,35 +31,12 @@ public class PlayerProfileStatsHandlerUI : NetworkBehaviour
 
     private void PlayerLocal_OnPlayerReachedTargetTileWithPlayerId(short playerId)
     {
-        InitializePlayerSelectedProfileRevertServerRpc(playerId);
+        InitializePlayerSelectedProfileRevert(playerId);
     }
     private void OnDisable()
     {
         PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
         PlayerLocal.OnPlayerReachedTargetTileWithPlayerId -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void InitializePlayerSelectedProfileRevertServerRpc(short selectedPlayerId)
-    {
-        InitializePlayerSelectedProfileRevertClientRpc(selectedPlayerId);
-    }
-
-    [ClientRpc]
-    private void InitializePlayerSelectedProfileRevertClientRpc(short selectedPlayerId)
-    {
-        for (int i = 0; i < playerProfileSingleUIList.Count; i++)
-        {
-            if (playerProfileSingleUIList[i].GetPlayerConnectedId() == selectedPlayerId)
-            {
-                playerProfileSingleUIList[i].ButtonInteractableEnabled(false);
-                playerProfileSingleUIList[i].ButtonAccessbilityCheckRevert(); // Double Check Has Turn Access
-            }
-            else
-            {
-                playerProfileSingleUIList[i].ButtonInteractableEnabled(true);
-            }
-        }
     }
 
     private void InitializePlayerSelectedProfile(short selectedPlayerId)
@@ -82,6 +51,21 @@ public class PlayerProfileStatsHandlerUI : NetworkBehaviour
             else
             {
                 playerProfileSingleUIList[i].ButtonInteractableEnabled(false);
+            }
+        }
+    }
+    private void InitializePlayerSelectedProfileRevert(short selectedPlayerId)
+    {
+        for (int i = 0; i < playerProfileSingleUIList.Count; i++)
+        {
+            if (playerProfileSingleUIList[i].GetPlayerConnectedId() == selectedPlayerId)
+            {
+                playerProfileSingleUIList[i].ButtonInteractableEnabled(false);
+                playerProfileSingleUIList[i].ButtonAccessbilityCheckRevert(); // Double Check Has Turn Access
+            }
+            else
+            {
+                playerProfileSingleUIList[i].ButtonInteractableEnabled(true);
             }
         }
     }
