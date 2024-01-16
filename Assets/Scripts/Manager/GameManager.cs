@@ -9,6 +9,7 @@ public class GameManager : NetworkBehaviour
 
     public static event Action<GameManager> OnAnyGameManagerSpawned;
     public event Action<short> OnStartMatchPerformed; //With Client Id Selected
+    public event Action<short> OnPlayerMovedSuccess;
 
     private Dictionary<ulong, bool> playerReadyDictionary;
     [SerializeField] private PlayMode playMode;
@@ -82,6 +83,7 @@ public class GameManager : NetworkBehaviour
     private void SetPlayerSuccessfullyMovedClientRpc(short playerId)
     {
         Debug.Log($"Player Move Finished And That Player Id {playerId}");
+        OnPlayerMovedSuccess?.Invoke(playerId);
     }
 
     private void TestingNetCodeUI_OnPlayerClickedHostOrClientBtn(object sender, EventArgs e)
