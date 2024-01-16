@@ -3,12 +3,13 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerProfileSingleUI : MonoBehaviour
+public class PlayerProfileSingleUI : NetworkBehaviour
 {
     public static event Action<short,short> OnAnyPlayerPressedRollButton; //with Player id And Dice Face Value
+    [field: SerializeField] public short PlayerConnectedId {  get; private set; }
+
     [SerializeField]
     private Button rollButton;
-    [SerializeField] private short playerConnectedId;
     
     private DiceSelectorVisual diceSelectorVisual;
     private DiceRollAnimation diceRollAnimation;
@@ -24,14 +25,12 @@ public class PlayerProfileSingleUI : MonoBehaviour
 
             diceRollAnimation.RollDice((OnDiceRolledFaceValue) =>
             {
-                OnAnyPlayerPressedRollButton?.Invoke(playerConnectedId,OnDiceRolledFaceValue);
+                OnAnyPlayerPressedRollButton?.Invoke(PlayerConnectedId,OnDiceRolledFaceValue);
             });
             
         });
         
     }
-
-    public short GetPlayerConnectedId() => playerConnectedId;
     public void ButtonInteractableEnabled(bool canInteractable)
     {
         rollButton.interactable = canInteractable;
@@ -41,11 +40,11 @@ public class PlayerProfileSingleUI : MonoBehaviour
 
     public void ButtonAccessbilityCheck()
     {
-        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId == playerConnectedId;
+        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId == PlayerConnectedId;
     }
     public void ButtonAccessbilityCheckRevert()
     {
-        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId != playerConnectedId;
+        rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId != PlayerConnectedId;
     }
 
     public void UpdateSelectedVisual(bool canInteractable)
