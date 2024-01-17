@@ -20,8 +20,6 @@ public class PlayerProfileSingleUI : MonoBehaviour
 
         rollButton.onClick.AddListener(() =>
         {
-            rollButton.interactable = false;
-
             diceRollAnimation.RollDice((OnDiceRolledFaceValue) =>
             {
                 OnAnyPlayerPressedRollButton?.Invoke(playerConnectedId,OnDiceRolledFaceValue);
@@ -48,7 +46,7 @@ public class PlayerProfileSingleUI : MonoBehaviour
         rollButton.interactable = (short)NetworkManager.Singleton.LocalClientId != playerConnectedId;
     }
 
-    public void UpdateSelectedVisual(bool canInteractable)
+    private void UpdateSelectedVisual(bool canInteractable)
     {
         if (canInteractable)
         {
