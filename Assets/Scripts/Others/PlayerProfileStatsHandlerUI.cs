@@ -4,22 +4,16 @@ using UnityEngine;
 
 public class PlayerProfileStatsHandlerUI : MonoBehaviour
 {
-    public static PlayerProfileStatsHandlerUI Instance {  get; private set; }
-
     [SerializeField] private GameObject playersProfileStatsParent;
     [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList;
 
-    private void Awake()
-    {
-        Instance = this;
-    }
     private void Start()
     {
         Hide();
 
-        GameManager.OnAnyGameManagerSpawned += (localGameManager) =>
+        GameManager.OnAnyGameManagerSpawned += (gameManager) =>
         {
-            localGameManager.OnStartMatchPerformed += (selectedPlayerId) =>
+            gameManager.OnStartMatchPerformed += (selectedPlayerId) =>
             {
                 Show();
                 Debug.Log("Current Default Turn Player Id Is :" + selectedPlayerId);
@@ -27,12 +21,12 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
             };
         };
 
-        //PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
     }
 
-    private void PlayerLocal_OnAnyPlayerSpawned(short playerId)
+    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
     {
-        PlayerLocal.OnAnyPlayerReachedTargetTile += PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
+        PlayerLocal.OnPlayerReachedTargetTileWithPlayerId += PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
     }
 
     private void PlayerLocal_OnPlayerReachedTargetTileWithPlayerId(short playerId)
@@ -42,7 +36,7 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
     private void OnDisable()
     {
         PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
-        PlayerLocal.OnAnyPlayerReachedTargetTile -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
+        PlayerLocal.OnPlayerReachedTargetTileWithPlayerId -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
     }
 
     private void InitializePlayerSelectedProfile(short selectedPlayerId)

@@ -1,27 +1,19 @@
 using System;
-using Unity.Netcode;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerTurnController : NetworkBehaviour
+public class PlayerTurnController : MonoBehaviour
 {
-    public override void OnNetworkSpawn()
+    public enum PlayerTurns
     {
-        //if (!IsOwner) return;
-
-        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
-       
+        playerA, playerB
     }
 
-    private void PlayerLocal_OnAnyPlayerSpawned(short playerId)
-    {
-        Debug.Log("Player Spawned");
-        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
-        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
-    }
+    private PlayerTurns playerTurn;
 
-    //public override void OnNetworkDespawn()
-    //{
-    //    PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
-    //    PlayerLocal.OnPlayerReachedTargetTileWithPlayerId -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId1;
-    //}
+    internal void SetPlayerTurn()
+    {
+        throw new NotImplementedException();
+    }
 }

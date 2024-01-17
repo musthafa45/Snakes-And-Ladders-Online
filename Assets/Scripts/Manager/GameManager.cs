@@ -14,25 +14,12 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private PlayMode playMode;
     private short FirstMovePlayerId;
 
-    private void Awake()
-    {
-        if (LocalInstance == null)
-        {
-            LocalInstance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
     public override void OnNetworkSpawn()
     {
-        //if (IsOwner)
-        //{
-        //    LocalInstance = this;
-        //}
+        if (IsOwner)
+        {
+            LocalInstance = this;
+        }
 
         playerReadyDictionary = new Dictionary<ulong, bool>();
 
@@ -52,36 +39,15 @@ public class GameManager : NetworkBehaviour
         TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn += TestingNetCodeUI_OnPlayerClickedHostOrClientBtn;
         PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
 
-        OnAnyGameManagerSpawned?.Invoke(this);
+        OnAnyGameManagerSpawned?.Invoke(this as GameManager);
     }
 
-    private void PlayerLocal_OnAnyPlayerSpawned(short playerId)
+    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
     {
         SetPlayerReadyAndTryStartMatch();
 
-        //PlayerLocal.OnAnyPlayerReachedTargetTile -= PlayerLocal_OnPlayerReachedTargetTile;
-        //PlayerLocal.OnAnyPlayerReachedTargetTile += PlayerLocal_OnPlayerReachedTargetTile;
-
-        //PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
-        //PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
-    }
-
-
-    private void PlayerLocal_OnPlayerReachedTargetTile(short playerId)
-    {
-        SetPlayerSuccessfullyMovedServerRpc(playerId);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SetPlayerSuccessfullyMovedServerRpc(short playerId)
-    {
-        SetPlayerSuccessfullyMovedClientRpc(playerId);
-    }
-
-    [ClientRpc]
-    private void SetPlayerSuccessfullyMovedClientRpc(short playerId)
-    {
-        Debug.Log($"Player Move Finished And That Player Id {playerId}");
+        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
+        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
     }
 
     private void TestingNetCodeUI_OnPlayerClickedHostOrClientBtn(object sender, EventArgs e)
@@ -90,16 +56,9 @@ public class GameManager : NetworkBehaviour
         SetPlayerReadyServerRpc();
     }
 
-    public override void OnNetworkDespawn()
-    {
-        TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn -= TestingNetCodeUI_OnPlayerClickedHostOrClientBtn;
-        PlayerLocal.OnAnyPlayerReachedTargetTile -= PlayerLocal_OnPlayerReachedTargetTile;
-    }
-
     private void OnDisable()
     {
         TestingNetCodeUI.Instance.OnPlayerClickedHostOrClientBtn -= TestingNetCodeUI_OnPlayerClickedHostOrClientBtn;
-        PlayerLocal.OnAnyPlayerReachedTargetTile -= PlayerLocal_OnPlayerReachedTargetTile;
     }
 
     public void SetPlayerReadyAndTryStartMatch()
@@ -145,10 +104,6 @@ public class GameManager : NetworkBehaviour
 
     public PlayMode GetPlayMode() => playMode;
 
-    public void SetPlayerSuccessfullyMoved(short localClientId)
-    {
-        PlayerLocal_OnPlayerReachedTargetTile(localClientId);
-    }
 }
 public enum PlayMode
 {
