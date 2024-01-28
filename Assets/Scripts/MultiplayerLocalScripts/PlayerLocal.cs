@@ -69,10 +69,7 @@ public class PlayerLocal : NetworkBehaviour
             else
             {
                 Debug.LogWarning("Index Out Of Bound");
-                //EventManager.Instance.InvokePlayerStoppedMoving();
-
                 GameManager.LocalInstance.SetPlayerReachedTarget(NetworkManager.Singleton.LocalClientId);
-                //EventManager.Instance.InvokeMoveOutOfBound();
             }
         }
         else
@@ -86,17 +83,13 @@ public class PlayerLocal : NetworkBehaviour
             else
             {
                 Debug.LogWarning("Index Out Of Bound");
-                //EventManager.Instance.InvokePlayerStoppedMoving();
                 GameManager.LocalInstance.SetPlayerReachedTarget(NetworkManager.Singleton.LocalClientId);
-                //EventManager.Instance.InvokeMoveOutOfBound();
             }
         }
     }
 
     private IEnumerator MoveOneByOne(int targetTileIndex)
     {
-        //EventManager.Instance.InvokePlayerStartedMoving();
-
         int targetTileId = 0;
         for (int i = 0; i < targetTileIndex; i++)
         {
@@ -132,7 +125,6 @@ public class PlayerLocal : NetworkBehaviour
             });
         }
 
-        //EventManager.Instance.InvokePlayerStoppedMoving();
         GameManager.LocalInstance.SetPlayerReachedTarget(NetworkManager.Singleton.LocalClientId);
         
         // this Is For Enable Disable Roll Dice Button
@@ -146,11 +138,9 @@ public class PlayerLocal : NetworkBehaviour
 
         if (isMovingBack)
         {
-            // Once the player reaches back to the starting tile, reset the movement direction
-            if (/*standingTileId - targetTileIndex == 0*/ standingTileId == 1)
+            if (standingTileId == 1)
             {
                 isMovingBack = false;
-                //EventManager.Instance.InvokePlayerWin();
                 Debug.Log("Player Win");
             }
         }
@@ -180,11 +170,6 @@ public class PlayerLocal : NetworkBehaviour
         {
             transform.DOJump(targetPosition, 0.5f, 1, 0.6f).SetEase(Ease.InOutBack).OnComplete(() =>
             {
-                //if (diceBoard.GetAllTile()[^1] == targetTile)
-                //{
-                //    Debug.Log("100 th Tile Reached");
-                //    isMovingBack = true;
-                //}
                 OnPlayerReached();
             });
         }

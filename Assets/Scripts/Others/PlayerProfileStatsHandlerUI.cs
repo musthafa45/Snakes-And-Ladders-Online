@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerProfileStatsHandlerUI : NetworkBehaviour
+public class PlayerProfileStatsHandlerUI : MonoBehaviour
 {
     public static PlayerProfileStatsHandlerUI LocalInstance;
    
@@ -13,19 +13,9 @@ public class PlayerProfileStatsHandlerUI : NetworkBehaviour
     private void Awake()
     {
         LocalInstance = this;
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        if (!IsOwner)
-        {
-            return;
-        }
 
         Hide();
-
     }
-
 
     public void OnAnyPlayerMoveDone(ulong localClientId)
     {
