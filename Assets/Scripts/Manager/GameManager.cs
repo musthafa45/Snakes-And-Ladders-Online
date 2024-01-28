@@ -8,19 +8,27 @@ public class GameManager : NetworkBehaviour
     public static GameManager LocalInstance { get; private set; }
 
     public static event Action<GameManager> OnAnyGameManagerSpawned;
+
     public event Action<short> OnStartMatchPerformed; //With Client Id Selected
 
     private Dictionary<ulong, bool> playerReadyDictionary;
     [SerializeField] private PlayMode playMode;
     private short FirstMovePlayerId;
 
-    public override void OnNetworkSpawn()
+    private void Awake()
     {
-        if (IsOwner)
+        if(LocalInstance == null)
         {
             LocalInstance = this;
+            DontDestroyOnLoad(this.gameObject);
         }
-
+        else
+        {
+            Destroy(LocalInstance);
+        }
+    }
+    public override void OnNetworkSpawn()
+    {
         playerReadyDictionary = new Dictionary<ulong, bool>();
 
         if (PlayerPrefs.GetInt("PlayMode") == 1)
@@ -100,10 +108,29 @@ public class GameManager : NetworkBehaviour
     private void StartMatchClientRpc(short firstMovePlayerId)
     {
         OnStartMatchPerformed?.Invoke(firstMovePlayerId);
+
+        PlayerProfileStatsHandlerUI.LocalInstance.SetupPlayerProfile(firstMovePlayerId);
     }
 
     public PlayMode GetPlayMode() => playMode;
 
+    public void SetPlayerReachedTarget(ulong localClientId)
+    {
+        Debug.Log($"Moved Done Client {localClientId}");
+        AnyPlayerMovedServerRpc(localClientId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void AnyPlayerMovedServerRpc(ulong localClientId)
+    {
+        AnyPlayerMovedClientRpc(localClientId);
+    }
+
+    [ClientRpc]
+    private void AnyPlayerMovedClientRpc(ulong localClientId)
+    {
+        PlayerProfileStatsHandlerUI.LocalInstance.OnAnyPlayerMoveDone(localClientId);
+    }
 }
 public enum PlayMode
 {

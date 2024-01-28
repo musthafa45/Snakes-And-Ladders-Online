@@ -18,7 +18,7 @@ public class WaitigForOpponentUI : MonoBehaviour
 
         GameManager.OnAnyGameManagerSpawned += (gameManager) =>
         {
-            gameManager.GetComponent<GameManager>().OnStartMatchPerformed += (selectedPlayerId) => { 
+            gameManager.OnStartMatchPerformed += (selectedPlayerId) => { 
                 HideWaitingForOpponentUI(); 
             }; //GameManager_LocalInstance_OnStartMatchPerformed;
         };

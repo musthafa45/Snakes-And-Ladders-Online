@@ -1,74 +1,86 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerProfileStatsHandlerUI : MonoBehaviour
+public class PlayerProfileStatsHandlerUI : NetworkBehaviour
 {
+    public static PlayerProfileStatsHandlerUI LocalInstance;
+   
     [SerializeField] private GameObject playersProfileStatsParent;
-    [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList;
+    [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList; // 0 is Local player, 1 is Player 2
 
-    private void Start()
+    private void Awake()
     {
+        LocalInstance = this;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
+
         Hide();
 
-        GameManager.OnAnyGameManagerSpawned += (gameManager) =>
+    }
+
+
+    public void OnAnyPlayerMoveDone(ulong localClientId)
+    {
+        if(localClientId == NetworkManager.Singleton.LocalClientId)
         {
-            gameManager.OnStartMatchPerformed += (selectedPlayerId) =>
-            {
-                Show();
-                Debug.Log("Current Default Turn Player Id Is :" + selectedPlayerId);
-                InitializePlayerSelectedProfile(selectedPlayerId);
-            };
-        };
+            Debug.Log($"Moved Client Id {localClientId} is Local Player");
 
-        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
-    }
+            playerProfileSingleUIList[0].ButtonInteractableEnabled(false);
+            playerProfileSingleUIList[0].SetSelectedVisual(false);
 
-    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
-    {
-        PlayerLocal.OnPlayerReachedTargetTileWithPlayerId += PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
-    }
-
-    private void PlayerLocal_OnPlayerReachedTargetTileWithPlayerId(short playerId)
-    {
-        InitializePlayerSelectedProfileRevert(playerId);
-    }
-    private void OnDisable()
-    {
-        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
-        PlayerLocal.OnPlayerReachedTargetTileWithPlayerId -= PlayerLocal_OnPlayerReachedTargetTileWithPlayerId;
-    }
-
-    private void InitializePlayerSelectedProfile(short selectedPlayerId)
-    {
-        for (int i = 0; i < playerProfileSingleUIList.Count; i++)
+            playerProfileSingleUIList[1].SetSelectedVisual(true);
+            playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+        }
+        else
         {
-            if (playerProfileSingleUIList[i].GetPlayerConnectedId() == selectedPlayerId)
-            {
-                playerProfileSingleUIList[i].ButtonInteractableEnabled(true);
-                playerProfileSingleUIList[i].ButtonAccessbilityCheck(); // Double Check Has Turn Access
-            }
-            else
-            {
-                playerProfileSingleUIList[i].ButtonInteractableEnabled(false);
-            }
+            Debug.Log($"Moved Client Id {localClientId} Opponent Player");
+            playerProfileSingleUIList[0].ButtonInteractableEnabled(true);
+            playerProfileSingleUIList[0].SetSelectedVisual(true);
+
+            playerProfileSingleUIList[1].SetSelectedVisual(false);
+            playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+        }
+
+    }
+
+    public void InitializePlayerSelectedProfile(short selectedPlayerId)
+    {
+        if(selectedPlayerId == (short)NetworkManager.Singleton.LocalClientId)
+        {
+            //local Player Selected
+            playerProfileSingleUIList[0].ButtonInteractableEnabled(true);
+            playerProfileSingleUIList[0].SetSelectedVisual(true);
+
+            playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+            playerProfileSingleUIList[1].SetSelectedVisual(false);
+        }
+        else
+        {
+            //opponent Player selected
+            playerProfileSingleUIList[0].ButtonInteractableEnabled(false);
+            playerProfileSingleUIList[0].SetSelectedVisual(false);
+
+            playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+            playerProfileSingleUIList[1].SetSelectedVisual(true);
         }
     }
-    private void InitializePlayerSelectedProfileRevert(short selectedPlayerId)
+
+    public void SetupPlayerProfile(short selectedPlayerId)
     {
-        for (int i = 0; i < playerProfileSingleUIList.Count; i++)
-        {
-            if (playerProfileSingleUIList[i].GetPlayerConnectedId() == selectedPlayerId)
-            {
-                playerProfileSingleUIList[i].ButtonInteractableEnabled(false);
-                playerProfileSingleUIList[i].ButtonAccessbilityCheckRevert(); // Double Check Has Turn Access
-            }
-            else
-            {
-                playerProfileSingleUIList[i].ButtonInteractableEnabled(true);
-            }
-        }
+        Show();
+        Debug.Log("Current Default Turn Player Id Is :" + selectedPlayerId);
+        InitializePlayerSelectedProfile(selectedPlayerId);
     }
+
+   
 
     private void Show()
     {

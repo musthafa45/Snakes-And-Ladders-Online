@@ -1357,6 +1357,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543053263}
+  - component: {fileID: 543053265}
   - component: {fileID: 543053264}
   m_Layer: 5
   m_Name: Players Profile Stats Handler UI
@@ -1401,6 +1402,26 @@ MonoBehaviour:
   playerProfileSingleUIList:
   - {fileID: 1269077407}
   - {fileID: 1986206398}
+--- !u!114 &543053265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543053262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1992349152
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1001 &580280016
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3734,7 +3755,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1139924426}
-  - component: {fileID: 1139924427}
   - component: {fileID: 1139924425}
   m_Layer: 0
   m_Name: Ui Manager
@@ -3755,22 +3775,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac74234c32ee18042b0981d3d147d982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  diceFace1: {fileID: 21300000, guid: 019099d65b04003479b229a724c69639, type: 3}
-  diceFace2: {fileID: 21300000, guid: 2d55728080fa35c40918b05ad2f3bc4a, type: 3}
-  diceFace3: {fileID: 21300000, guid: ccc3b4c23afef75418814f4a1b8a2241, type: 3}
-  diceFace4: {fileID: 21300000, guid: d4c2de8b15fca634b8c2ffe1aeb74b7f, type: 3}
-  diceFace5: {fileID: 21300000, guid: 0bff93e1a8dab794cb5840d49886aba7, type: 3}
-  diceFace6: {fileID: 21300000, guid: 448fbdd61e70b764ab3804821df342fd, type: 3}
-  rollButtonPlayer1: {fileID: 1149642450}
-  rollButtonPlayer2: {fileID: 1154926598}
-  diceImage1: {fileID: 1149642451}
-  diceImage2: {fileID: 1154926599}
-  diceFaceValue: 0
-  dicedPlayerId: 0
-  player1: {fileID: 0}
-  player2: {fileID: 0}
-  player1NameTextMeshProGui: {fileID: 1025718040}
-  player2NameTextMeshProGui: {fileID: 611105862}
   menuButton: {fileID: 1882992517}
 --- !u!4 &1139924426
 Transform:
@@ -3787,26 +3791,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1139924427
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1139924424}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2597253274
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!1001 &1147512641
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3897,7 +3881,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00006866455
+      value: 0.000045776367
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -4575,50 +4559,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1154926596}
   m_CullTransparentMesh: 1
---- !u!1 &1169385926
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1169385928}
-  - component: {fileID: 1169385927}
-  m_Layer: 0
-  m_Name: Random Player Selector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1169385927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169385926}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3f95c005b0620741ae371323a1986e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &1169385928
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169385926}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1269077403
 GameObject:
   m_ObjectHideFlags: 0
@@ -5255,51 +5195,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &1559661088
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1559661090}
-  - component: {fileID: 1559661089}
-  m_Layer: 0
-  m_Name: EventManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1559661089
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559661088}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74f339caa1ef7c2418ac585eecdaa57f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  diceRolledPlayerId: 0
---- !u!4 &1559661090
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1559661088}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1590060585
 GameObject:
   m_ObjectHideFlags: 0
@@ -5924,7 +5819,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1883554697
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6941,8 +6836,6 @@ SceneRoots:
   - {fileID: 482426678}
   - {fileID: 748960871}
   - {fileID: 1147512641}
-  - {fileID: 1139924426}
   - {fileID: 1085932987}
-  - {fileID: 1559661090}
+  - {fileID: 1139924426}
   - {fileID: 2070206254}
-  - {fileID: 1169385928}
