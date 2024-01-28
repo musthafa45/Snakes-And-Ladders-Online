@@ -131,6 +131,22 @@ public class GameManager : NetworkBehaviour
     {
         PlayerProfileStatsHandlerUI.LocalInstance.OnAnyPlayerMoveDone(localClientId);
     }
+
+    public void OnPlayerWin(ulong localClientId)
+    {
+        SetPlayerWinServerRpc(localClientId);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerWinServerRpc(ulong localClientId)
+    {
+        SetPlayerWinClientRpc(localClientId);
+    }
+    [ClientRpc]
+    private void SetPlayerWinClientRpc(ulong winlocalClientId)
+    {
+        UiManager.Instance.ShowGameFinishedUi(winlocalClientId);
+    }
 }
 public enum PlayMode
 {

@@ -53,10 +53,10 @@ public class PlayerLocal : NetworkBehaviour
     private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId, short diceFaceValue)
     {
         if (!IsOwner) return;
-        DoMovePlayer(diceFaceValue);
+        SetTargetTileToMove(diceFaceValue);
     }
 
-    private void DoMovePlayer(short diceFaceValue)
+    private void SetTargetTileToMove(short diceFaceValue)
     {
         if (!isMovingBack) // is Moving Now 1 to 100
         {
@@ -108,20 +108,19 @@ public class PlayerLocal : NetworkBehaviour
 
             Move(GetTilePositionFromId(targetTileId), MoveType.Jump,() =>
             {
-                if (diceBoard.IsTileIDLadder(standingTileId))
-                {
-                    standingTileId = diceBoard.GetLadderEndTileId(targetTileId);
-                    Invoke(nameof(MoveToLadder), 0.5f);
-                    Debug.Log("Player Standing In Ladder Start");
-                }
-
                 if(diceBoard.IsTileIDSnake(standingTileId))
                 {
                     standingTileId = diceBoard.GetSnakeEndTileId(targetTileId);
                     StartCoroutine(MoveToSnakeTail(targetTileId));
                     Debug.Log("Player Standing In Snake Head");
                 }
-               
+
+                if (diceBoard.IsTileIDLadder(standingTileId))
+                {
+                    standingTileId = diceBoard.GetLadderEndTileId(targetTileId);
+                    Invoke(nameof(MoveToLadder), 0.5f);
+                    Debug.Log("Player Standing In Ladder Start");
+                }
             });
         }
 
@@ -142,14 +141,15 @@ public class PlayerLocal : NetworkBehaviour
             {
                 isMovingBack = false;
                 Debug.Log("Player Win");
+                GameManager.LocalInstance.OnPlayerWin(NetworkManager.Singleton.LocalClientId);
             }
         }
     }
 
-    private IEnumerator MoveToSnakeTail(int targetTileId)
+    private IEnumerator MoveToSnakeTail(int targetTileId,Action OntailPosReached  =null)
     {
         yield return new WaitForSeconds(0.5f);
-        Move(GetTilePositionFromId(diceBoard.GetSnakeEndTileId(targetTileId)), MoveType.Snake);
+        Move(GetTilePositionFromId(diceBoard.GetSnakeEndTileId(targetTileId)), MoveType.Snake,OntailPosReached);
     }
 
     private void MoveToLadder()
