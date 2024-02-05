@@ -31,5 +31,6 @@ public class MainMenuUiManager : MonoBehaviour
             PlayerPrefs.SetInt("PlayMode", 2);
             SceneManager.LoadScene("MultiplayerLocalAndCom");
         });
+
     }
 }

@@ -35,7 +35,6 @@ public class TestingNetCodeUI : MonoBehaviour
 
             HideUi();
             OnPlayerClickedHostOrClientBtn?.Invoke(this, EventArgs.Empty);
-
         });
     }
 
