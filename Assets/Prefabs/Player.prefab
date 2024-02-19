@@ -78,7 +78,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 5.12, y: 5.12}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -132,7 +132,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3409234575
+  GlobalObjectIdHash: 2180906631
+  InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -152,8 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1eddc75f06fbd824db3a9d0a0cf2a12c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  standingTileId: 1
-  playerId: 1
 --- !u!114 &5561632005347493259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,6 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 199811c48ab88e94987635dd8e798443, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
   SyncPositionZ: 1

@@ -16,19 +16,19 @@ public class MainMenuUiManager : MonoBehaviour
         muliplayerOnlineButton.onClick.AddListener(() =>
         {
             //SceneManager.LoadScene("MultiplayerOnline");
-            PlayerPrefs.SetInt("PlayMode", 3);
-            SceneManager.LoadScene("MultiplayerLocalAndCom");
+            //PlayerPrefs.SetInt("PlayMode", 3);
+            SceneManager.LoadScene("Lobby");
         });
 
         multiplayerLocalButton.onClick.AddListener(() =>
         {
-            PlayerPrefs.SetInt("PlayMode", 1);
+            //PlayerPrefs.SetInt("PlayMode", 1);
             SceneManager.LoadScene("MultiplayerLocalAndCom");
         });
 
         multiplayerComputerButton.onClick.AddListener(() =>
         {
-            PlayerPrefs.SetInt("PlayMode", 2);
+            //PlayerPrefs.SetInt("PlayMode", 2);
             SceneManager.LoadScene("MultiplayerLocalAndCom");
         });
 
