@@ -4,7 +4,7 @@ using DG.Tweening;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-public class Player : NetworkBehaviour
+public class BoardPlayer : NetworkBehaviour
 {
     private DiceBoard diceBoard;
     //[SerializeField] private float speed = 10f;
