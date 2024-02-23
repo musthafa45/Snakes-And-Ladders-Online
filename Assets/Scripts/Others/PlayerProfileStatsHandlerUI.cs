@@ -13,8 +13,6 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
     private void Awake()
     {
         LocalInstance = this;
-
-        Hide();
     }
 
     public void OnAnyPlayerMoveDone(ulong localClientId)
@@ -63,11 +61,9 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
         }
     }
 
-    public void SetupPlayerProfile(short selectedPlayerId)
+    public void SetupPlayersRandomFirstMove(short selectedClientId)
     {
-        Show();
-        Debug.Log("Current Default Turn Player Id Is :" + selectedPlayerId);
-        InitializePlayerSelectedProfile(selectedPlayerId);
+        InitializePlayerSelectedProfile(selectedClientId);
     }
 
    
