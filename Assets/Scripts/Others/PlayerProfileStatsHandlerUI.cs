@@ -1,23 +1,26 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Netcode;
+using Unity.Services.Authentication;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class PlayerProfileStatsHandlerUI : MonoBehaviour
 {
-    public static PlayerProfileStatsHandlerUI LocalInstance;
-   
+    public static PlayerProfileStatsHandlerUI Instance;
+
     [SerializeField] private GameObject playersProfileStatsParent;
-    [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList; // 0 is Local player, 1 is Player 2
+    [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList; // 0 is Local player, 1 is Opponet Player
 
     private void Awake()
     {
-        LocalInstance = this;
+        Instance = this;
     }
 
     public void OnAnyPlayerMoveDone(ulong localClientId)
     {
-        if(localClientId == NetworkManager.Singleton.LocalClientId)
+        if (localClientId == NetworkManager.Singleton.LocalClientId)
         {
             Debug.Log($"Moved Client Id {localClientId} is Local Player");
 
@@ -39,9 +42,9 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
 
     }
 
-    public void InitializePlayerSelectedProfile(short selectedPlayerId)
+    public void InitializePlayerSelectedProfile(ulong selectedPlayerId)
     {
-        if(selectedPlayerId == (short)NetworkManager.Singleton.LocalClientId)
+        if (selectedPlayerId == NetworkManager.Singleton.LocalClientId)
         {
             //local Player Selected
             playerProfileSingleUIList[0].ButtonInteractableEnabled(true);
@@ -61,20 +64,36 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
         }
     }
 
-    public void SetupPlayersRandomFirstMove(short selectedClientId)
+    public void SetupPlayersRandomFirstMove(ulong selectedClientId)
     {
         InitializePlayerSelectedProfile(selectedClientId);
     }
 
-   
-
-    private void Show()
+    public void SetPlayerNames()
     {
-        playersProfileStatsParent.SetActive(true);
+        playerProfileSingleUIList[0].SetPlayerName(PlayerPrefs.GetString("PlayerName")); // local Player Profile
+        playerProfileSingleUIList[1].SetPlayerName(GetOpponentPlayerName().ToString()); // Opponent Player Profile
     }
 
-    private void Hide()
+    private FixedString64Bytes GetOpponentPlayerName()
     {
-        playersProfileStatsParent.SetActive(false);
+        Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
+
+
+        foreach(Player player in lobby.Players)
+        {
+            Debug.Log("Playing Player Name " + player.Data["PlayerName"].Value + "Player Client Id " + player.Id);
+        }
+
+        for (int i = 0; i < lobby.Players.Count; i++)
+        {
+            if (lobby.Players[i].Id != AuthenticationService.Instance.PlayerId)
+            {
+                // this is enemy
+                return lobby.Players[i].Data["PlayerName"].Value;
+            }
+
+        }
+        return string.Empty;
     }
 }

@@ -1,5 +1,6 @@
 using System;
-using Unity.Netcode;
+using TMPro;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,8 @@ public class PlayerProfileSingleUI : MonoBehaviour
     public static event Action<short,short> OnAnyPlayerPressedRollButton; //with Player id And Dice Face Value
     [SerializeField]
     private Button rollButton;
-    [SerializeField] private short playerConnectedId;
+    [SerializeField] private ulong playerConnectedId;
+    [SerializeField] private TextMeshProUGUI playerNameTextMeshProGui;
     
     private DiceSelectorVisual diceSelectorVisual;
     private DiceRollAnimation diceRollAnimation;
@@ -23,10 +25,15 @@ public class PlayerProfileSingleUI : MonoBehaviour
             rollButton.interactable = false;
             diceRollAnimation.RollDice((OnDiceRolledFaceValue) =>
             {
-                OnAnyPlayerPressedRollButton?.Invoke(playerConnectedId,OnDiceRolledFaceValue);
+                OnAnyPlayerPressedRollButton?.Invoke((short)playerConnectedId,OnDiceRolledFaceValue);
             });
             
         });
+        
+    }
+
+    private void Start()
+    {
         
     }
 
@@ -47,5 +54,8 @@ public class PlayerProfileSingleUI : MonoBehaviour
         }
     }
 
-   
+    public void SetPlayerName(string playerName)
+    {
+        playerNameTextMeshProGui.text = playerName;
+    }
 }

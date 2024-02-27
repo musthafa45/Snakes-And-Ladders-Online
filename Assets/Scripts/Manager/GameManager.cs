@@ -9,31 +9,65 @@ public class GameManager : NetworkBehaviour
 
     public static event Action<GameManager> OnAnyGameManagerSpawned;
 
-    [SerializeField] private PlayMode playMode;
+    [SerializeField] private Transform playerPrefab;
 
     private void Awake()
     {
-        if(LocalInstance == null)
-        {
-            LocalInstance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            Destroy(LocalInstance);
-        }
+        LocalInstance = this;
     }
+
     public override void OnNetworkSpawn()
     {
         PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
 
         OnAnyGameManagerSpawned?.Invoke(this);
+
+        if(IsServer)
+        {
+            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
+        }
     }
 
-    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
+    private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
-        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            Transform playerTransform = Instantiate(playerPrefab);
+            playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        }
+
+        ulong selectedPlayerId = 0;
+        if (IsServer)
+        {
+           selectedPlayerId = (ulong)UnityEngine.Random.Range(0, 2);
+        }
+
+        SelectRandomPlayerForFirstMoveServerRpc(selectedPlayerId);
+        SetPlayerNamesServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SetPlayerNamesServerRpc()
+    {
+        SetPlayerNamesClientRpc();
+    }
+
+    [ClientRpc]
+    private void SetPlayerNamesClientRpc()
+    {
+        PlayerProfileStatsHandlerUI.Instance.SetPlayerNames();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void SelectRandomPlayerForFirstMoveServerRpc(ulong selectedPlayerId)
+    {
+        SelectRandomPlayerForFirstMoveClientRpc(selectedPlayerId);
+    }
+
+    [ClientRpc]
+    private void SelectRandomPlayerForFirstMoveClientRpc(ulong selectedPlayerId)
+    {
+        PlayerProfileStatsHandlerUI.Instance.SetupPlayersRandomFirstMove(selectedPlayerId);
     }
 
     public void SetPlayerReachedTarget(ulong localClientId)
@@ -51,7 +85,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     private void AnyPlayerMovedClientRpc(ulong localClientId)
     {
-        PlayerProfileStatsHandlerUI.LocalInstance.OnAnyPlayerMoveDone(localClientId);
+        PlayerProfileStatsHandlerUI.Instance.OnAnyPlayerMoveDone(localClientId);
     }
 
     public void OnPlayerWin(ulong localClientId)
@@ -69,8 +103,10 @@ public class GameManager : NetworkBehaviour
     {
         UiManager.Instance.ShowGameFinishedUi(winlocalClientId);
     }
-}
-public enum PlayMode
-{
-    MultiplayerLocal, MultiplayerCom, MultiplayerOnline,
+
+    private void PlayerLocal_OnAnyPlayerSpawned(object sender, EventArgs e)
+    {
+        PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
+        PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+    }
 }

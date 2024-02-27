@@ -9,8 +9,6 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
     public event EventHandler OnPlayerDataNetworkListChanged;
     private NetworkList<PlayerData> playerDataNetworkList;
 
-
-
     private void Awake()
     {
         Instance = this;
@@ -24,7 +22,7 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
     {
         OnPlayerDataNetworkListChanged?.Invoke(this, EventArgs.Empty);
-        if(playerDataNetworkList.Count == 2)
+        if (playerDataNetworkList.Count == 2)
         {
             Debug.Log("Two Players Connected Start Match");
             NetworkManager.Singleton.SceneManager.LoadScene("Game", UnityEngine.SceneManagement.LoadSceneMode.Single);
@@ -34,20 +32,42 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
     public void StartHost()
     {
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
-
         NetworkManager.Singleton.StartHost();
     }
 
     private void NetworkManager_OnClientConnectedCallback(ulong clientId)
     {
-        playerDataNetworkList.Add(new PlayerData 
-        { 
-            clientId = clientId 
-        });  
+        string playerName = PlayerPrefs.GetString("PlayerName").ToString();
+        ModifyNetWorkDataListRequestServerRpc(clientId, playerName);
     }
 
     public void StartClient()
     {
+        NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.StartClient();
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void ModifyNetWorkDataListRequestServerRpc(ulong clientId, string playerName)
+    {
+        ModifyNetWorkDataListRequestClientRpc(clientId, playerName);
+    }
+
+    [ClientRpc]
+    private void ModifyNetWorkDataListRequestClientRpc(ulong clientId, string playerName)
+    {
+        if (IsHost)
+        {
+            playerDataNetworkList.Add(new PlayerData
+            {
+                clientId = clientId,
+                clientName = playerName
+            });
+        }
+    }
+
+    public NetworkList<PlayerData> GetPlayerDataNetWorkList()
+    {
+        return playerDataNetworkList;
     }
 }
