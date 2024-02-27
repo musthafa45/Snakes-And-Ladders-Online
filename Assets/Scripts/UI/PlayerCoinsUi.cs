@@ -1,18 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerCoinsUi : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private TextMeshProUGUI coinTextMeshproGui;
+
+    private void Start()
     {
-        
+        PlayerWallet.OnPlayerWalletModified += PlayerWallet_OnPlayerWalletModified;
+
+        UpdateCashUi(PlayerWallet.GetCurrentCashAmount());
     }
 
-    // Update is called once per frame
-    void Update()
+    private void PlayerWallet_OnPlayerWalletModified(object sender, PlayerWallet.OnPlayerWalletModifiedArgs e)
     {
-        
+        UpdateCashUi(e.currentCashAmount);
     }
+
+    private void UpdateCashUi(int cashAmount)
+    {
+        coinTextMeshproGui.text = cashAmount.ToString();
+    }
+
+    private void OnDestroy()
+    {
+        PlayerWallet.OnPlayerWalletModified -= PlayerWallet_OnPlayerWalletModified;
+    }
+
 }

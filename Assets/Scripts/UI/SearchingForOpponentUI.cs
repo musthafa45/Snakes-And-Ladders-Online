@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,4 +17,6 @@ public class SearchingForOpponentUI : MonoBehaviour
         // Apply the new rotation
         loadingImage.transform.localEulerAngles = currentRotation;
     }
+
+
 }

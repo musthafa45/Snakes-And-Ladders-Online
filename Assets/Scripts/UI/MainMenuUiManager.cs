@@ -3,15 +3,21 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 public class MainMenuUiManager : MonoBehaviour
 {
-    [SerializeField] private Button muliplayerOnlineButton;
+    [SerializeField] private Button muliplayerQuickMatchButton;
+    [SerializeField] private Button muliplayerSelectLobbyButton;
     [SerializeField] private Button multiplayerLocalButton;
     [SerializeField] private Button multiplayerComputerButton;
 
     private void Awake()
     {
-        muliplayerOnlineButton.onClick.AddListener(() =>
+        muliplayerQuickMatchButton.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("QuickLobby");
+        });
+
+        muliplayerSelectLobbyButton.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("SelectLobby");
         });
 
         multiplayerLocalButton.onClick.AddListener(() =>

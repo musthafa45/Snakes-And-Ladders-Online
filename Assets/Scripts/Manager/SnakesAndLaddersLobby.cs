@@ -16,6 +16,12 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 {
     public static SnakesAndLaddersLobby Instance { get; private set; }
 
+    public enum LobbyType
+    {
+        QuickMatch,SelectLobby
+    }
+    [SerializeField] private LobbyType lobbyType = LobbyType.QuickMatch;
+
     private Lobby joinedLobby;
 
     private float lobbyHeartBeatTimer;
@@ -41,7 +47,25 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
         Debug.Log(PlayerPrefs.GetString("PlayerName"));
 
-        CreateOrJoinLobby();
+        InitializeLobbyType();
+
+    }
+
+    private void InitializeLobbyType()
+    {
+        if (lobbyType == LobbyType.QuickMatch)
+        {
+            CreateOrJoinLobby();
+        }
+        else if (lobbyType == LobbyType.SelectLobby)
+        {
+
+        }
+    }
+
+    public void SetLobbyType(LobbyType lobbyType)
+    {
+        this.lobbyType = lobbyType;
     }
 
     private async void Update()
