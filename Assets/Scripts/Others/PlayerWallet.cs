@@ -5,11 +5,11 @@ public static class PlayerWallet
     public static event EventHandler<OnPlayerWalletModifiedArgs> OnPlayerWalletModified;
     public class OnPlayerWalletModifiedArgs : EventArgs
     {
-        public int currentCashAmount;
+        public float currentCashAmount;
     }
-    private static int cashAmount = 200;
+    private static float cashAmount = 2000;
 
-    public static void AddCash(int amount)
+    public static void AddCash(float amount)
     {
         cashAmount += amount;
 
@@ -19,7 +19,7 @@ public static class PlayerWallet
         });
     }
 
-    public static void DetuctCash(int amount)
+    public static void DetuctCash(float amount)
     {
         cashAmount -= amount;
 
@@ -29,7 +29,7 @@ public static class PlayerWallet
         });
     }
 
-    public static int GetCurrentCashAmount()
+    public static float GetCurrentCashAmount()
     {
         return cashAmount;
     }

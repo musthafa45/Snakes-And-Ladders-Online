@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 public class LobbyBetSelect : MonoBehaviour
@@ -48,7 +49,7 @@ public class LobbyBetSelect : MonoBehaviour
             selectedBet = currentSelectedBet,
         });
 
-        Debug.Log("Current Bet Win "+ currentSelectedBet.WinAmount + "Current bet Entry " + currentSelectedBet.EntryAmount);
+        //Debug.Log("Current Bet Win "+ currentSelectedBet.WinAmount + "Current bet Entry " + currentSelectedBet.EntryAmount);
     }
 
     private void SelectLobbyUi_OnBetIncreaseClicked(object sender, EventArgs e)
@@ -65,13 +66,14 @@ public class LobbyBetSelect : MonoBehaviour
             selectedBet = currentSelectedBet,
         });
 
-        Debug.Log("Current Bet Win "+ currentSelectedBet.WinAmount + "Current bet Entry " + currentSelectedBet.EntryAmount);
+        //Debug.Log("Current Bet Win "+ currentSelectedBet.WinAmount + "Current bet Entry " + currentSelectedBet.EntryAmount);
 
     }
 
     [System.Serializable]
     public class BetData
     {
+        public string GameMode;
         public float WinAmount;
         public float EntryAmount;
     }

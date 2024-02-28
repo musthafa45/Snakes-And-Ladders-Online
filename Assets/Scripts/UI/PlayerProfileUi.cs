@@ -24,16 +24,18 @@ public class PlayerProfileUi : MonoBehaviour
     private void Start()
     {
         PlayerProfileSetup.Instance.OnPlayerNameModified += PlayerProfileSetup_OnPlayerNameModified;
+
+        InitializePlayerName();
     }
 
-    private void PlayerProfileSetup_OnPlayerNameModified(string playerName)
+    private void PlayerProfileSetup_OnPlayerNameModified()
     {
-        InitializePlayerName(playerName);
+        InitializePlayerName();
     }
 
-    private void InitializePlayerName(string playerName)
+    private void InitializePlayerName()
     {
-        textMeshProUGUIplayerName.text = playerName;
+        textMeshProUGUIplayerName.text = PlayerPrefs.GetString("PlayerName");
     }
 
     private void OnDestroy()

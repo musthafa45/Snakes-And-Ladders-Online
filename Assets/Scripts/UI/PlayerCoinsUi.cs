@@ -19,7 +19,7 @@ public class PlayerCoinsUi : MonoBehaviour
         UpdateCashUi(e.currentCashAmount);
     }
 
-    private void UpdateCashUi(int cashAmount)
+    private void UpdateCashUi(float cashAmount)
     {
         coinTextMeshproGui.text = cashAmount.ToString();
     }

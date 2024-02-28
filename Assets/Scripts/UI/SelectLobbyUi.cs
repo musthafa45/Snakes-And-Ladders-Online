@@ -10,6 +10,12 @@ public class SelectLobbyUi : MonoBehaviour
     public event EventHandler OnBetIncreaseClicked;
     public event EventHandler OnBetDecreaseClicked;
 
+    public event EventHandler<OnPlayButtonClickedArgs> OnPlayButtonClicked;
+    public class OnPlayButtonClickedArgs : EventArgs
+    {
+        public LobbyBetSelect.BetData betData;
+    }
+
     [SerializeField] private TextMeshProUGUI availableCoinTextMeshProUGUI;
     [SerializeField] private Button playButton;
     [SerializeField] private Button betIncreaseBtn,betDecreaseBtn;
@@ -17,6 +23,8 @@ public class SelectLobbyUi : MonoBehaviour
     [Space]
     [SerializeField] private TextMeshProUGUI winAmountTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI entryAmountTextMeshProUGUI;
+
+    private LobbyBetSelect.BetData currentBetData;
 
     private void Awake()
     {
@@ -32,7 +40,12 @@ public class SelectLobbyUi : MonoBehaviour
 
         playButton.onClick.AddListener(() =>
         {
+            OnPlayButtonClicked?.Invoke(this, new OnPlayButtonClickedArgs
+            {
+                betData = currentBetData
+            });
 
+            Hide();
         });
 
         betIncreaseBtn.onClick.AddListener(() =>
@@ -48,6 +61,8 @@ public class SelectLobbyUi : MonoBehaviour
 
     private void LobbyBetSelect_OnBetModified(object sender, LobbyBetSelect.OnBetModifiedArgs e)
     {
+        currentBetData = e.selectedBet;
+
         UpdateBetUi(e.selectedBet);
     }
 
@@ -55,6 +70,13 @@ public class SelectLobbyUi : MonoBehaviour
     {
         winAmountTextMeshProUGUI.text = betData.WinAmount.ToString();
         entryAmountTextMeshProUGUI.text = "Entry: " + betData.EntryAmount.ToString();
+
+        playButton.interactable = IsPlayerHasSufficiantEntryAmount(betData.EntryAmount);
+    }
+
+    private bool IsPlayerHasSufficiantEntryAmount(float entryAmount)
+    {
+        return PlayerWallet.GetCurrentCashAmount() >= entryAmount;
     }
 
     private void PlayerWallet_OnPlayerWalletModified(object sender, PlayerWallet.OnPlayerWalletModifiedArgs e)
@@ -65,5 +87,15 @@ public class SelectLobbyUi : MonoBehaviour
     private void UpdatePlayerWalletUi()
     {
         availableCoinTextMeshProUGUI.text = PlayerWallet.GetCurrentCashAmount().ToString();
+    }
+
+    private void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    private void Hide()
+    {
+        gameObject.SetActive(false);
     }
 }

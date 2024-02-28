@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerProfileSetup : MonoBehaviour
 {
-    public event Action<string> OnPlayerNameModified;
+    public event Action OnPlayerNameModified;
     public static PlayerProfileSetup Instance {  get; private set; }
 
     [SerializeField] private PlayerProfileSetupUI playerProfileSetupUI;
@@ -30,6 +30,6 @@ public class PlayerProfileSetup : MonoBehaviour
         PlayerPrefs.SetString("PlayerName", playerName);
         PlayerPrefs.Save();
 
-        OnPlayerNameModified?.Invoke(playerName);
+        OnPlayerNameModified?.Invoke();
     }
 }

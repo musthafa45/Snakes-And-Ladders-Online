@@ -339,23 +339,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   betDataList:
-  - WinAmount: 1000
+  - GameMode: Bronze
+    WinAmount: 1000
     EntryAmount: 500
-  - WinAmount: 4000
+  - GameMode: Silver
+    WinAmount: 4000
     EntryAmount: 2000
-  - WinAmount: 10000
+  - GameMode: Gold
+    WinAmount: 10000
     EntryAmount: 5000
-  - WinAmount: 20000
+  - GameMode: Diomond
+    WinAmount: 20000
     EntryAmount: 10000
-  - WinAmount: 50000
+  - GameMode: Platinum
+    WinAmount: 50000
     EntryAmount: 25000
-  - WinAmount: 100000
+  - GameMode: Ace
+    WinAmount: 100000
     EntryAmount: 50000
-  - WinAmount: 200000
+  - GameMode: Conquerer
+    WinAmount: 200000
     EntryAmount: 100000
-  - WinAmount: 950000
+  - GameMode: Skull
+    WinAmount: 950000
     EntryAmount: 500000
-  - WinAmount: 2000000
+  - GameMode: Legend
+    WinAmount: 2000000
     EntryAmount: 1000000
 --- !u!1 &175601868
 GameObject:
@@ -418,7 +427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &282014919
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1257,9 +1266,9 @@ RectTransform:
   - {fileID: 145436568}
   m_Father: {fileID: 20391449}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 31, y: 41.890015}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 212, y: 41.890015}
   m_SizeDelta: {x: 225.57422, y: 83.781}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1018935560
@@ -2565,7 +2574,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114689057623555238, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_Size
-      value: 0.96943957
+      value: 0.9478638
       objectReference: {fileID: 0}
     - target: {fileID: 114689057623555238, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_Value
@@ -2641,7 +2650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000015258789
+      value: -0.000015258789
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2852,6 +2861,10 @@ PrefabInstance:
       value: 1250
       objectReference: {fileID: 0}
     - target: {fileID: 265229693040713684, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
+      propertyPath: m_text
+      value: 200%
+      objectReference: {fileID: 0}
+    - target: {fileID: 265229693040713684, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
@@ -3050,6 +3063,10 @@ PrefabInstance:
     - target: {fileID: 4669098673009861108, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 5291212171907188673, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
+      propertyPath: m_Interactable
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8381608741583018130, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_textAlignment
