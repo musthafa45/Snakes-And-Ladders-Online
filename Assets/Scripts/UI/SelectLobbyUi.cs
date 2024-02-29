@@ -1,5 +1,6 @@
 using System;
 using TMPro;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,10 +21,15 @@ public class SelectLobbyUi : MonoBehaviour
     [SerializeField] private Button playButton;
     [SerializeField] private Button betIncreaseBtn,betDecreaseBtn;
 
-    [Space]
+    [Space(10)]
+    [SerializeField] private TextMeshProUGUI lobbyNameTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI winAmountTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI entryAmountTextMeshProUGUI;
+    [SerializeField] private TMP_Dropdown dropDown;
 
+    [SerializeField] private Transform publicLobbyParent, privateLobbyParent;
+
+    private bool isPrivate = false;
     private LobbyBetSelect.BetData currentBetData;
 
     private void Awake()
@@ -57,6 +63,37 @@ public class SelectLobbyUi : MonoBehaviour
         {
             OnBetDecreaseClicked?.Invoke(this, EventArgs.Empty); 
         });
+
+        dropDown.onValueChanged.AddListener((dr) =>
+        {
+            int index = dropDown.value;
+
+            switch(index)
+            {
+                case 0: isPrivate = false; break;
+                case 1: isPrivate = true; break;
+            }
+
+            InitializeLobbyUi();
+        });
+
+        InitializeLobbyUi();
+    }
+
+    private void InitializeLobbyUi()
+    {
+        if(!isPrivate)
+        {
+            //public Mode
+            publicLobbyParent.gameObject.SetActive(true);
+            privateLobbyParent.gameObject.SetActive(false);
+        }
+        else
+        {
+            // private Mode
+            publicLobbyParent.gameObject.SetActive(false);
+            privateLobbyParent.gameObject.SetActive(true);
+        }
     }
 
     private void LobbyBetSelect_OnBetModified(object sender, LobbyBetSelect.OnBetModifiedArgs e)
@@ -70,6 +107,7 @@ public class SelectLobbyUi : MonoBehaviour
     {
         winAmountTextMeshProUGUI.text = betData.WinAmount.ToString();
         entryAmountTextMeshProUGUI.text = "Entry: " + betData.EntryAmount.ToString();
+        lobbyNameTextMeshProUGUI.text = betData.GameMode;
 
         playButton.interactable = IsPlayerHasSufficiantEntryAmount(betData.EntryAmount);
     }
@@ -89,13 +127,10 @@ public class SelectLobbyUi : MonoBehaviour
         availableCoinTextMeshProUGUI.text = PlayerWallet.GetCurrentCashAmount().ToString();
     }
 
-    private void Show()
-    {
-        gameObject.SetActive(true);
-    }
-
     private void Hide()
     {
         gameObject.SetActive(false);
     }
+
+ 
 }

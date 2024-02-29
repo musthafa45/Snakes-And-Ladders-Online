@@ -13,11 +13,16 @@ public class SearchingForOpponentUI : MonoBehaviour
         if(SelectLobbyUi.Instance != null)
         {
             SelectLobbyUi.Instance.OnPlayButtonClicked += SelectLobbyUi_OnPlayButtonClicked;
-
+            PrivateLobbyUi.Instance.OnPlayPrivateLobbyCreateClicked += PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn;
 
             Hide();
         }
         
+    }
+
+    private void PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn(object sender, EventArgs e)
+    {
+        Show();
     }
 
     private void SelectLobbyUi_OnPlayButtonClicked(object sender, SelectLobbyUi.OnPlayButtonClickedArgs e)

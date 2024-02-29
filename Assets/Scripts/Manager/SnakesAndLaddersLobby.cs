@@ -1,4 +1,5 @@
 using QFSW.QC;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
@@ -16,6 +17,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 {
     public static SnakesAndLaddersLobby Instance { get; private set; }
 
+    public event Action<string,string> OnPlayerCreatedPrivateLobby; // Lobby Code, Lobby Name
     public enum LobbyType
     {
         QuickMatch,SelectLobby
@@ -59,7 +61,55 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         else if (lobbyType == LobbyType.SelectLobby)
         {
             SelectLobbyUi.Instance.OnPlayButtonClicked += SelectLobbyUi_OnPlayButtonClicked;
+            PrivateLobbyUi.Instance.OnPlayPrivateLobbyCreateClicked += PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn;
         }
+    }
+
+    private void PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn(object sender, PrivateLobbyUi.OnPlayPrivateLobbyCreateClickedArgs e)
+    {
+        CreatePrivateLobby(e.betData);
+    }
+
+    private async void CreatePrivateLobby(LobbyBetSelect.BetData betData)
+    {
+        try
+        {
+            // Creating New Lobby With Given details
+            int maxPlayer = 2;
+
+            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
+            {
+                IsPrivate = true,
+
+                Player = GetPlayer(),
+            };
+
+            joinedLobby = await LobbyService.Instance.CreateLobbyAsync(betData.GameMode, maxPlayer, createLobbyOptions);
+
+            Allocation allocation = await AllocationRelay();
+
+            string relayJoinCode = await GetRelayJoinCode(allocation);
+
+            await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+            {
+                Data = new Dictionary<string, DataObject>
+            {
+                {"RelayCode" , new DataObject(DataObject.VisibilityOptions.Member,relayJoinCode) }
+            },
+            });
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+
+            SnakesAndLaddersMultiplayer.Instance.StartHost();
+
+            Debug.Log("Created private Lobby " + joinedLobby.Name + " And Code " + joinedLobby.LobbyCode);
+            OnPlayerCreatedPrivateLobby?.Invoke(joinedLobby.LobbyCode,joinedLobby.Name);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+
     }
 
     private void SelectLobbyUi_OnPlayButtonClicked(object sender, SelectLobbyUi.OnPlayButtonClickedArgs e)
