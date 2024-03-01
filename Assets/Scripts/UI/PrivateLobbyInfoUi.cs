@@ -1,13 +1,27 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PrivateLobbyInfoUi : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI lobbyNameTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI lobbyCodeTextMeshProUGUI;
+
+    [SerializeField] private Button copyCodeButton;
+
+    private string lobbyCode;
+    private void Awake()
+    {
+        copyCodeButton.onClick.AddListener(() =>
+        {
+            TextEditor textEditor = new TextEditor();
+            textEditor.text = lobbyCode;
+            textEditor.SelectAll();
+            textEditor.Copy();
+
+            Debug.Log("Code Copied");
+        });
+    }
     void Start()
     {
         SnakesAndLaddersLobby.Instance.OnPlayerCreatedPrivateLobby += SAL_lobby_Instance_OnPlayerCreatedPrivateLobby;
@@ -33,6 +47,8 @@ public class PrivateLobbyInfoUi : MonoBehaviour
 
     private void UpdateUi(string lobbyCode, string lobbyName)
     {
+        this.lobbyCode = lobbyCode;
+
         lobbyNameTextMeshProUGUI.text = "Lobby Name : " + lobbyName;
         lobbyCodeTextMeshProUGUI.text = "Lobby Code : " + lobbyCode;
     }

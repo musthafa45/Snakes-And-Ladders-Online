@@ -1,7 +1,8 @@
 using System;
 using TMPro;
-using Unity.PlasticSCM.Editor.WebApi;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SelectLobbyUi : MonoBehaviour
@@ -29,17 +30,27 @@ public class SelectLobbyUi : MonoBehaviour
 
     [SerializeField] private Transform publicLobbyParent, privateLobbyParent;
 
+    [SerializeField] private Button mainMenuButton;
+
     private bool isPrivate = false;
     private LobbyBetSelect.BetData currentBetData;
 
     private void Awake()
     {
         Instance = this;
+
+        mainMenuButton.onClick.AddListener(() =>
+        {
+            NetworkManager.Singleton.Shutdown();
+            SnakesAndLaddersLobby.Instance.LeaveLobby();
+            SceneManager.LoadScene("MainMenu");
+        });
     }
 
     private void Start()
     {
         PlayerWallet.OnPlayerWalletModified += PlayerWallet_OnPlayerWalletModified;
+
         LobbyBetSelect.Instance.OnBetModified += LobbyBetSelect_OnBetModified;
 
         UpdatePlayerWalletUi();
@@ -78,6 +89,9 @@ public class SelectLobbyUi : MonoBehaviour
         });
 
         InitializeLobbyUi();
+        
+        currentBetData = LobbyBetSelect.Instance.BetDatas[0];
+        UpdateBetUi(currentBetData);
     }
 
     private void InitializeLobbyUi()

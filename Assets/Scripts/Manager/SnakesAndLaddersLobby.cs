@@ -38,18 +38,28 @@ public class SnakesAndLaddersLobby : MonoBehaviour
     }
     private async void Start()
     {
-        await UnityServices.InitializeAsync();
-
-        AuthenticationService.Instance.SignedIn += () =>
+        try
         {
-            Debug.Log($"Authendication Success {AuthenticationService.Instance.PlayerId}");
-        };
+            await UnityServices.InitializeAsync();
 
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            AuthenticationService.Instance.SignedIn += () =>
+            {
+                Debug.Log($"Authendication Success {AuthenticationService.Instance.PlayerId}");
+            };
 
-        Debug.Log(PlayerPrefs.GetString("PlayerName"));
+            if(!AuthenticationService.Instance.IsSignedIn)
+            {
+                await AuthenticationService.Instance.SignInAnonymouslyAsync();
+            }
+           
+            Debug.Log(PlayerPrefs.GetString("PlayerName"));
 
-        InitializeLobbyType();
+            InitializeLobbyType();
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
     }
 
     private void InitializeLobbyType()
@@ -62,13 +72,25 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         {
             SelectLobbyUi.Instance.OnPlayButtonClicked += SelectLobbyUi_OnPlayButtonClicked;
             PrivateLobbyUi.Instance.OnPlayPrivateLobbyCreateClicked += PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn;
+            PrivateLobbyUi.Instance.OnPlayPrivateLobbyJoinClicked += PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked;
         }
     }
 
+    private void PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked(object sender, PrivateLobbyUi.OnPlayPrivateLobbyJoinClickedArgs e)
+    {
+        JoinPrivateLobby(e.lobbyCode);
+    }
     private void PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn(object sender, PrivateLobbyUi.OnPlayPrivateLobbyCreateClickedArgs e)
     {
         CreatePrivateLobby(e.betData);
     }
+    private void SelectLobbyUi_OnPlayButtonClicked(object sender, SelectLobbyUi.OnPlayButtonClickedArgs e)
+    {
+        string gameMode = e.betData.GameMode;
+
+        CreateOrJoinLobby(gameMode);
+    }
+
 
     private async void CreatePrivateLobby(LobbyBetSelect.BetData betData)
     {
@@ -111,17 +133,30 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
 
     }
-
-    private void SelectLobbyUi_OnPlayButtonClicked(object sender, SelectLobbyUi.OnPlayButtonClickedArgs e)
+    private async void JoinPrivateLobby(string lobbyCode)
     {
-        string gameMode = e.betData.GameMode;
+        try
+        {
+            JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions();
+            joinLobbyByCodeOptions.Player = GetPlayer();
 
-        CreateOrJoinLobby(gameMode);
-    }
+            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode,joinLobbyByCodeOptions);
 
-    public void SetLobbyType(LobbyType lobbyType)
-    {
-        this.lobbyType = lobbyType;
+            JoinAllocation joinAllocation = await JoinRelay(joinedLobby.Data["RelayCode"].Value);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+
+            SnakesAndLaddersMultiplayer.Instance.StartClient();
+
+            Debug.Log("Joined Lobby By Code " + joinedLobby.Name);
+
+            ListPlayers();
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.LogException(e);
+        }
+        
     }
 
     private async void Update()
@@ -207,13 +242,49 @@ public class SnakesAndLaddersLobby : MonoBehaviour
                     },
                 });
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation,"dtls"));
+                if(NetworkManager.Singleton != null && NetworkManager.Singleton.TryGetComponent(out UnityTransport unityTransport))
+                {
+                    unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
+                }
 
                 SnakesAndLaddersMultiplayer.Instance.StartHost();
 
                 Debug.Log("Created Lobby And Joined " + joinedLobby.Name);
             }
 
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public async void DeleteLobby()
+    {
+        try
+        {
+            if(joinedLobby != null)
+            {
+                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+                joinedLobby = null;
+            }
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+
+    }
+
+    public async void LeaveLobby()
+    {
+        try
+        {
+            if (joinedLobby != null)
+            {
+                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
+                joinedLobby = null;
+            }
         }
         catch (LobbyServiceException e)
         {
@@ -425,4 +496,5 @@ public class SnakesAndLaddersLobby : MonoBehaviour
             Debug.Log("Player Name Joined " + player.Data["PlayerName"].Value);
         }
     }
+
 }

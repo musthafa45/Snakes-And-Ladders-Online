@@ -11,20 +11,30 @@ public class PrivateLobbyUi : MonoBehaviour
     public event EventHandler OnBetDecreaseClicked;
 
     public event EventHandler<OnPlayPrivateLobbyCreateClickedArgs> OnPlayPrivateLobbyCreateClicked;
+    public event EventHandler<OnPlayPrivateLobbyJoinClickedArgs> OnPlayPrivateLobbyJoinClicked;
     public class OnPlayPrivateLobbyCreateClickedArgs : EventArgs
     {
         public LobbyBetSelect.BetData betData;
     }
-
+    public class OnPlayPrivateLobbyJoinClickedArgs : EventArgs
+    {
+        public string lobbyCode;
+    }
     [SerializeField] private Button CreateLobbyButton;
+    [SerializeField] private TMP_InputField lobbyNameInputField;
+
+    [SerializeField] private Button JoinLobbyButton;
+    [SerializeField] private TMP_InputField lobbyCodeInputField;
+
     [SerializeField] private Button betIncreaseBtn, betDecreaseBtn;
 
     [SerializeField] private TextMeshProUGUI winAmountTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI entryAmountTextMeshProUGUI;
-    [SerializeField] private TMP_InputField lobbyNameInputField;
+
 
     private LobbyBetSelect.BetData currentBetData;
 
+    [Header("Swithcing Create Lobby Ui To Join")]
     [SerializeField] private Button createLobbyMenuButton;
     [SerializeField] private Button joinLobbyMenuButton;
 
@@ -49,12 +59,6 @@ public class PrivateLobbyUi : MonoBehaviour
             joinLobbyMenuParent.gameObject.SetActive(true);
         });
 
-    }
-
-    private void Start()
-    {
-        LobbyBetSelect.Instance.OnBetModified += LobbyBetSelect_OnBetModified;
-
         CreateLobbyButton.onClick.AddListener(() =>
         {
             OnPlayPrivateLobbyCreateClicked?.Invoke(this, new OnPlayPrivateLobbyCreateClickedArgs
@@ -70,6 +74,17 @@ public class PrivateLobbyUi : MonoBehaviour
             Hide();
         });
 
+
+        JoinLobbyButton.onClick.AddListener(() =>
+        {
+            OnPlayPrivateLobbyJoinClicked?.Invoke(this, new OnPlayPrivateLobbyJoinClickedArgs
+            {
+                lobbyCode = lobbyCodeInputField.text,
+            });
+
+            Hide();
+        });
+
         betIncreaseBtn.onClick.AddListener(() =>
         {
             OnBetIncreaseClicked?.Invoke(this, EventArgs.Empty);
@@ -80,6 +95,20 @@ public class PrivateLobbyUi : MonoBehaviour
             OnBetDecreaseClicked?.Invoke(this, EventArgs.Empty);
         });
 
+    }
+
+    private void Start()
+    {
+        LobbyBetSelect.Instance.OnBetModified += LobbyBetSelect_OnBetModified;
+
+        currentBetData = LobbyBetSelect.Instance.BetDatas[0];
+        UpdateBetUi(currentBetData);
+    }
+
+    private void Update()
+    {
+        CreateLobbyButton.interactable = lobbyNameInputField.text.Length > 0;
+        JoinLobbyButton.interactable = lobbyCodeInputField.text.Length == 6;
     }
 
     private void Hide()

@@ -44,6 +44,8 @@ public class GameManager : NetworkBehaviour
 
         SelectRandomPlayerForFirstMoveServerRpc(selectedPlayerId);
         SetPlayerNamesServerRpc();
+
+        SnakesAndLaddersLobby.Instance.DeleteLobby();
     }
 
     [ServerRpc(RequireOwnership = false)]

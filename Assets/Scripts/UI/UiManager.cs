@@ -15,6 +15,8 @@ public class UiManager : MonoBehaviour
 
         menuButton.onClick.AddListener(() =>
         {
+            NetworkManager.Singleton.Shutdown();
+            SnakesAndLaddersLobby.Instance.LeaveLobby();
             SceneManager.LoadScene("MainMenu");
         });
     }

@@ -13,6 +13,9 @@ public class LobbyBetSelect : MonoBehaviour
     {
         public BetData selectedBet;
     }
+
+    public List<BetData> BetDatas => betDataList;
+
     [SerializeField] private List<BetData> betDataList;
 
     private BetData currentSelectedBet;
@@ -31,11 +34,6 @@ public class LobbyBetSelect : MonoBehaviour
 
         PrivateLobbyUi.Instance.OnBetIncreaseClicked += PrivateLobbyUi_Instance_OnBetIncreaseClicked;
         PrivateLobbyUi.Instance.OnBetDecreaseClicked += PrivateLobbyUi_Instance_OnBetDecreaseClicked;
-
-        OnBetModified?.Invoke(this, new OnBetModifiedArgs
-        {
-            selectedBet = currentSelectedBet,
-        });
     }
 
     private void PrivateLobbyUi_Instance_OnBetDecreaseClicked(object sender, EventArgs e)

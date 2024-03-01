@@ -41,6 +41,8 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
 
     public void StartHost()
     {
+        if (NetworkManager.Singleton == null) return;
+
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.StartHost();
     }
@@ -56,6 +58,12 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.OnClientConnectedCallback += NetworkManager_OnClientConnectedCallback;
         NetworkManager.Singleton.StartClient();
     }
+
+    //public override void OnDestroy()
+    //{
+    //    NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
+    //}
+    
 
     [ServerRpc(RequireOwnership = false)]
     private void ModifyNetWorkDataListRequestServerRpc(ulong clientId, string playerName)
