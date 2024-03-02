@@ -6,6 +6,12 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
 {
     public static SnakesAndLaddersMultiplayer Instance { get; private set; }
 
+    public event EventHandler<OnClientDisconnectedArgs> OnClientDisconnected;
+    public class OnClientDisconnectedArgs : EventArgs
+    {
+        public ulong clientId;
+    }
+
     public event EventHandler OnPlayerDataNetworkListChanged;
     private NetworkList<PlayerData> playerDataNetworkList;
 
@@ -24,9 +30,14 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
     }
 
-    private void NetworkManager_OnClientDisconnectCallback(ulong obj)
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
     {
-        Debug.Log("Client DisConnected "+ obj);
+        //Debug.Log("Client DisConnected "+ clientId);
+
+        OnClientDisconnected?.Invoke(this, new OnClientDisconnectedArgs
+        {
+            clientId = clientId
+        });
     }
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)

@@ -109,6 +109,8 @@ public class PrivateLobbyUi : MonoBehaviour
     {
         CreateLobbyButton.interactable = lobbyNameInputField.text.Length > 0;
         JoinLobbyButton.interactable = lobbyCodeInputField.text.Length == 6;
+
+        CreateLobbyButton.interactable = IsPlayerHasSufficiantEntryAmount(currentBetData.EntryAmount);
     }
 
     private void Hide()

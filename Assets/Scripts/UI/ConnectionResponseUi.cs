@@ -10,6 +10,7 @@ public class ConnectionResponseUi : MonoBehaviour
     [SerializeField] private TextMeshProUGUI connectionMsgTextMeshProUGUI;
     [SerializeField] private Button okButton;
 
+
     private void Awake()
     {
         Instance = this;
@@ -17,10 +18,19 @@ public class ConnectionResponseUi : MonoBehaviour
         okButton.onClick.AddListener(() =>
         {
             SceneManager.LoadScene("MainMenu");
-      
         });
+    }
+
+    private void Start()
+    {
+        SnakesAndLaddersLobby.Instance.OnPrivateLobbyJoinFailed += SnakesAndLaddersLobby_OnPrivateLobbyJoinFailed;
 
         Hide();
+    }
+
+    private void SnakesAndLaddersLobby_OnPrivateLobbyJoinFailed(object sender, System.EventArgs e)
+    {
+        Show();
     }
 
     public void SetConnectionResponseMsg(string msg)

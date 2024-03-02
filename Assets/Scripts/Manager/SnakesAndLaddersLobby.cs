@@ -18,10 +18,13 @@ public class SnakesAndLaddersLobby : MonoBehaviour
     public static SnakesAndLaddersLobby Instance { get; private set; }
 
     public event Action<string,string> OnPlayerCreatedPrivateLobby; // Lobby Code, Lobby Name
+    public event EventHandler OnPrivateLobbyJoinFailed;
+
     public enum LobbyType
     {
         QuickMatch,SelectLobby
     }
+
     [SerializeField] private LobbyType lobbyType = LobbyType.QuickMatch;
 
     private Lobby joinedLobby;
@@ -36,6 +39,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
     {
         Instance = this;
     }
+
     private async void Start()
     {
         try
@@ -61,7 +65,14 @@ public class SnakesAndLaddersLobby : MonoBehaviour
             Debug.Log(e);
         }
     }
-
+    private async void Update()
+    {
+        if(joinedLobby != null)
+        {
+            await HandleLobbyHeartBeat();
+            await HandleLobbyUpdate();
+        }
+    }
     private void InitializeLobbyType()
     {
         if (lobbyType == LobbyType.QuickMatch)
@@ -75,7 +86,6 @@ public class SnakesAndLaddersLobby : MonoBehaviour
             PrivateLobbyUi.Instance.OnPlayPrivateLobbyJoinClicked += PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked;
         }
     }
-
     private void PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked(object sender, PrivateLobbyUi.OnPlayPrivateLobbyJoinClickedArgs e)
     {
         JoinPrivateLobby(e.lobbyCode);
@@ -90,6 +100,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
         CreateOrJoinLobby(gameMode);
     }
+
 
 
     private async void CreatePrivateLobby(LobbyBetSelect.BetData betData)
@@ -154,18 +165,11 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
         catch (LobbyServiceException e)
         {
+            OnPrivateLobbyJoinFailed?.Invoke(this, EventArgs.Empty);
+
             Debug.LogException(e);
         }
         
-    }
-
-    private async void Update()
-    {
-        if(joinedLobby != null)
-        {
-            await HandleLobbyHeartBeat();
-            await HandleLobbyUpdate();
-        }
     }
 
     private async Task HandleLobbyUpdate()
