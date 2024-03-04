@@ -1,5 +1,5 @@
 ![Status](https://badgen.net/badge/Status/Release/orange?icon=github)
-![Type](https://badgen.net/badge/Type/Open Source/yellow)
+![Type](https://badgen.net/badge/Type/OpenSource/yellow)
 ![Engine](https://badgen.net/badge/Engine/Unity/blue)
 ![License](https://badgen.net/badge/license/MIT/green)
 
