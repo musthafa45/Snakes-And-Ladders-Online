@@ -9,8 +9,8 @@
 In this game, 
 
 ## **Official Release:**
-Made for Android - Play Store
-Coming Soon
+Made for Android (Play Store)
+- Coming Soon
 
 ## **Support:**
 [![Coffee_Banner](https://user-images.githubusercontent.com/101796812/258850302-9fe07b99-f397-452f-b8af-866b34b4160f.png)](https://www.buymeacoffee.com/parven)
