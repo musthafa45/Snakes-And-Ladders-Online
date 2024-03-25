@@ -43,7 +43,7 @@ public class SelectLobbyUi : MonoBehaviour
         {
             NetworkManager.Singleton.Shutdown();
             SnakesAndLaddersLobby.Instance.LeaveLobby();
-            SceneManager.LoadScene("MainMenu");
+            Loader.LoadScene(Loader.Scene.MainMenu);
         });
     }
 

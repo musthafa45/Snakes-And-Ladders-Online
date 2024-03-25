@@ -20,9 +20,13 @@ public class LobbyBetSelect : MonoBehaviour
 
     private BetData currentSelectedBet;
 
+    public BetData ActiveSelectedBet => currentSelectedBet;
+
     private void Awake()
     {
         Instance = this;
+
+        DontDestroyOnLoad(gameObject);
 
         currentSelectedBet = betDataList[0];
     }

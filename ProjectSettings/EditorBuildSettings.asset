@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: cbc36a4b8edd188478d503bb267699e8
   - enabled: 1
+    path: Assets/Scenes/Loading.unity
+    guid: 9c72ab02cd77dd742b24027473bb913c
+  - enabled: 1
     path: Assets/Scenes/QuickLobby.unity
     guid: 0ef8ef3afe2fe1944ab9ed281f03118d
   - enabled: 1

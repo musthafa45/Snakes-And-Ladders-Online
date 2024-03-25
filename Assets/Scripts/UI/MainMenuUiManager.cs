@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 public class MainMenuUiManager : MonoBehaviour
 {
     [SerializeField] private Button muliplayerQuickMatchButton;
@@ -12,22 +11,22 @@ public class MainMenuUiManager : MonoBehaviour
     {
         muliplayerQuickMatchButton.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("QuickLobby");
+            Loader.LoadScene(Loader.Scene.QuickLobby);
         });
 
         muliplayerSelectLobbyButton.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("SelectLobby");
+            Loader.LoadScene(Loader.Scene.SelectLobby);
         });
 
         multiplayerLocalButton.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("MultiplayerLocalAndCom");
+            
         });
 
         multiplayerComputerButton.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("MultiplayerLocalAndCom");
+            
         });
 
     }

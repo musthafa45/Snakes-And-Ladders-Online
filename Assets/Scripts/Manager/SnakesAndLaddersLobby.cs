@@ -203,12 +203,10 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
             if(queryResponse.Results.Count > 0)
             {
-                QuickJoinLobbyOptions quickJoinLobbyOptions = new QuickJoinLobbyOptions
-                {
-                    Player = GetPlayer(),
-                };
-
-                joinedLobby = await  Lobbies.Instance.QuickJoinLobbyAsync(quickJoinLobbyOptions);
+                JoinLobbyByIdOptions joinLobbyByIdOptions = new();
+                joinLobbyByIdOptions.Player = GetPlayer();
+                
+                joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id,joinLobbyByIdOptions);
 
                 JoinAllocation joinAllocation = await JoinRelay(joinedLobby.Data["RelayCode"].Value);
 

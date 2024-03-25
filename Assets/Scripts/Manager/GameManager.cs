@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class GameManager : NetworkBehaviour
@@ -10,6 +11,8 @@ public class GameManager : NetworkBehaviour
     public static event Action<GameManager> OnAnyGameManagerSpawned;
 
     [SerializeField] private Transform playerPrefab;
+
+    private LobbyBetSelect.BetData betData;
 
     private void Awake()
     {
@@ -39,13 +42,22 @@ public class GameManager : NetworkBehaviour
         ulong selectedPlayerId = 0;
         if (IsServer)
         {
-           selectedPlayerId = (ulong)UnityEngine.Random.Range(0, 2);
+            selectedPlayerId = (ulong)UnityEngine.Random.Range(0, 2);
         }
 
         SelectRandomPlayerForFirstMoveServerRpc(selectedPlayerId);
         SetPlayerNamesServerRpc();
 
+        SetBetData();
+
         SnakesAndLaddersLobby.Instance.DeleteLobby();
+    }
+
+    private void SetBetData()
+    {
+        Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
+        Debug.Log("Current Lobby is " + lobby.Name);
+        //betData = LobbyBetSelect.Instance.ActiveSelectedBet; dont use this Use Lobby Data
     }
 
     [ServerRpc(RequireOwnership = false)]

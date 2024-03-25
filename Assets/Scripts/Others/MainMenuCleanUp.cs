@@ -19,5 +19,10 @@ public class MainMenuCleanUp : MonoBehaviour
         {
             Destroy(SnakesAndLaddersMultiplayer.Instance.gameObject);
         }
+
+        if (LobbyBetSelect.Instance != null)
+        {
+            Destroy(LobbyBetSelect.Instance.gameObject);
+        }
     }
 }
