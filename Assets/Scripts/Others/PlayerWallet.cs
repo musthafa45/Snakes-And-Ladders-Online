@@ -1,7 +1,10 @@
 using System;
+using UnityEngine;
 
 public static class PlayerWallet
 {
+    private const string CASHAMOUNT_KEY = "cashAmount";
+
     public static event EventHandler<OnPlayerWalletModifiedArgs> OnPlayerWalletModified;
     public class OnPlayerWalletModifiedArgs : EventArgs
     {
@@ -13,6 +16,8 @@ public static class PlayerWallet
     {
         cashAmount += amount;
 
+        PlayerPrefs.SetFloat(CASHAMOUNT_KEY, cashAmount);
+
         OnPlayerWalletModified?.Invoke(null,new OnPlayerWalletModifiedArgs
         {
             currentCashAmount = amount
@@ -23,6 +28,8 @@ public static class PlayerWallet
     {
         cashAmount -= amount;
 
+        PlayerPrefs.SetFloat(CASHAMOUNT_KEY, cashAmount);
+
         OnPlayerWalletModified?.Invoke(null, new OnPlayerWalletModifiedArgs
         {
             currentCashAmount = amount
@@ -31,6 +38,13 @@ public static class PlayerWallet
 
     public static float GetCurrentCashAmount()
     {
-        return cashAmount;
+        if(PlayerPrefs.HasKey(CASHAMOUNT_KEY))
+        {
+            return PlayerPrefs.GetFloat(CASHAMOUNT_KEY);
+        }
+        else
+        {
+            return cashAmount;
+        }
     }
 }

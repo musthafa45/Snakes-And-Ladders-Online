@@ -132,7 +132,11 @@ public class PlayerLocal : NetworkBehaviour
         if (diceBoard.GetAllTile()[^1].GetTileId() == targetTileId)
         {
             Debug.Log("100 th Tile Reached");
-            isMovingBack = true;
+            //isMovingBack = true;
+            //Player Win One Way Mode
+
+            Debug.Log("Player Win");
+            GameManager.LocalInstance.OnPlayerWin(NetworkManager.Singleton.LocalClientId);
         }
 
         if (isMovingBack)
