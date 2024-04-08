@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ConnectionResponseUi : MonoBehaviour
@@ -17,7 +16,7 @@ public class ConnectionResponseUi : MonoBehaviour
 
         okButton.onClick.AddListener(() =>
         {
-            SceneManager.LoadScene("MainMenu");
+            Loader.LoadScene(Loader.Scene.MainMenu);
         });
     }
 
@@ -44,6 +43,6 @@ public class ConnectionResponseUi : MonoBehaviour
     }
     public void Hide()
     {
-        gameObject?.SetActive(false);
+        gameObject.SetActive(false);
     }
 }
