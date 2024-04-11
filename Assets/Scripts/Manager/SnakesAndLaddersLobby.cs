@@ -499,4 +499,8 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
+    public LobbyType GetLobbyType()
+    {
+        return lobbyType;
+    }
 }

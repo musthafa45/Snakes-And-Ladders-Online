@@ -42,6 +42,14 @@ public class PlayerLocal : NetworkBehaviour
         OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
 
         PlayerProfileSingleUI.OnAnyPlayerPressedRollButton += PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
+        CheatManager.Instance.OnPlayerPressedCheatCodeBtn += CheatManager_OnPlayerPressedCheatCodeBtn;
+    }
+
+    private void CheatManager_OnPlayerPressedCheatCodeBtn(object sender, EventArgs e)
+    {
+        int neededMoveAmount = 100 - standingTileId;
+
+        SetTargetTileToMove((short)neededMoveAmount);
     }
 
     public override void OnNetworkDespawn()
