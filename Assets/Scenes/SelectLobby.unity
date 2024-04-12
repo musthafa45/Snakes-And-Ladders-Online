@@ -483,43 +483,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca4b969734ab5f24caffada3e169d03c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  betDataList:
-  - GameMode: Bronze
-    WinAmount: 1000
-    EntryAmount: 500
-    GameLogoSprite: {fileID: 1605627477, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Silver
-    WinAmount: 4000
-    EntryAmount: 2000
-    GameLogoSprite: {fileID: 1779344737, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Gold
-    WinAmount: 10000
-    EntryAmount: 5000
-    GameLogoSprite: {fileID: 1985408668, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Diamond
-    WinAmount: 20000
-    EntryAmount: 10000
-    GameLogoSprite: {fileID: -580322118, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Platinum
-    WinAmount: 50000
-    EntryAmount: 25000
-    GameLogoSprite: {fileID: -2031943772, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Ace
-    WinAmount: 100000
-    EntryAmount: 50000
-    GameLogoSprite: {fileID: 1880910556, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Conquerer
-    WinAmount: 200000
-    EntryAmount: 100000
-    GameLogoSprite: {fileID: 1889374959, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Skull
-    WinAmount: 950000
-    EntryAmount: 500000
-    GameLogoSprite: {fileID: 1016310556, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
-  - GameMode: Legend
-    WinAmount: 2000000
-    EntryAmount: 1000000
-    GameLogoSprite: {fileID: -1123514087, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
+  betDataSO: {fileID: 11400000, guid: 2cdf9221582a3a44dbf808f584b17a97, type: 2}
 --- !u!1 &175601868
 GameObject:
   m_ObjectHideFlags: 0
@@ -6973,7 +6937,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00008392334
+      value: 0.0000076293945
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y

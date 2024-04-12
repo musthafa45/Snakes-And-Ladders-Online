@@ -103,7 +103,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
 
 
-    private async void CreatePrivateLobby(LobbyBetSelect.BetData betData)
+    private async void CreatePrivateLobby(BetDataSO.BetData betData)
     {
         try
         {

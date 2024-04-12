@@ -24,5 +24,10 @@ public class MainMenuCleanUp : MonoBehaviour
         {
             Destroy(LobbyBetSelect.Instance.gameObject);
         }
+
+        if(GameManager.LocalInstance != null)
+        {
+            Destroy(GameManager.LocalInstance.gameObject);
+        }
     }
 }

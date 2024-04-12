@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 
 public class LobbyBetSelect : MonoBehaviour
@@ -11,24 +9,20 @@ public class LobbyBetSelect : MonoBehaviour
 
     public class OnBetModifiedArgs : EventArgs
     {
-        public BetData selectedBet;
+        public BetDataSO.BetData selectedBet;
     }
 
-    public List<BetData> BetDatas => betDataList;
+    private BetDataSO.BetData currentSelectedBet;
 
-    [SerializeField] private List<BetData> betDataList;
+    public BetDataSO BetDataSO => betDataSO;
 
-    private BetData currentSelectedBet;
-
-    public BetData ActiveSelectedBet => currentSelectedBet;
+    [SerializeField] private BetDataSO betDataSO;
 
     private void Awake()
     {
         Instance = this;
 
-        DontDestroyOnLoad(gameObject);
-
-        currentSelectedBet = betDataList[0];
+        currentSelectedBet = betDataSO.BetDataSOList[0];
     }
 
     private void Start()
@@ -68,12 +62,12 @@ public class LobbyBetSelect : MonoBehaviour
 
     private void BetIncreamentOne()
     {
-        int nextIndex = betDataList.IndexOf(currentSelectedBet);
+        int nextIndex = betDataSO.BetDataSOList.IndexOf(currentSelectedBet);
         nextIndex++;
 
-        int clampedIndex = Mathf.Clamp(nextIndex, 0, betDataList.Count - 1);
+        int clampedIndex = Mathf.Clamp(nextIndex, 0, betDataSO.BetDataSOList.Count - 1);
 
-        currentSelectedBet = betDataList[clampedIndex];
+        currentSelectedBet = betDataSO.BetDataSOList[clampedIndex];
 
         OnBetModified?.Invoke(this, new OnBetModifiedArgs
         {
@@ -82,12 +76,12 @@ public class LobbyBetSelect : MonoBehaviour
     }
     private void BetDecreamentOne()
     {
-        int previousIndex = betDataList.IndexOf(currentSelectedBet);
+        int previousIndex = betDataSO.BetDataSOList.IndexOf(currentSelectedBet);
         previousIndex--;
 
-        int clampedIndex = Mathf.Clamp(previousIndex, 0, betDataList.Count - 1);
+        int clampedIndex = Mathf.Clamp(previousIndex, 0, betDataSO.BetDataSOList.Count - 1);
 
-        currentSelectedBet = betDataList[clampedIndex];
+        currentSelectedBet = betDataSO.BetDataSOList[clampedIndex];
 
         OnBetModified?.Invoke(this, new OnBetModifiedArgs
         {
@@ -95,12 +89,4 @@ public class LobbyBetSelect : MonoBehaviour
         });
     }
 
-    [System.Serializable]
-    public class BetData
-    {
-        public string GameMode;
-        public float WinAmount;
-        public float EntryAmount;
-        public Sprite GameLogoSprite;
-    }
 }

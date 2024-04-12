@@ -14,7 +14,7 @@ public class PrivateLobbyUi : MonoBehaviour
     public event EventHandler<OnPlayPrivateLobbyJoinClickedArgs> OnPlayPrivateLobbyJoinClicked;
     public class OnPlayPrivateLobbyCreateClickedArgs : EventArgs
     {
-        public LobbyBetSelect.BetData betData;
+        public BetDataSO.BetData betData;
     }
     public class OnPlayPrivateLobbyJoinClickedArgs : EventArgs
     {
@@ -32,7 +32,7 @@ public class PrivateLobbyUi : MonoBehaviour
     [SerializeField] private TextMeshProUGUI entryAmountTextMeshProUGUI;
     [SerializeField] private Image gameModeLogoImage;
 
-    private LobbyBetSelect.BetData currentBetData;
+    private BetDataSO.BetData currentBetData;
 
     [Header("Swithcing Create Lobby Ui To Join")]
     [SerializeField] private Button createLobbyMenuButton;
@@ -63,7 +63,7 @@ public class PrivateLobbyUi : MonoBehaviour
         {
             OnPlayPrivateLobbyCreateClicked?.Invoke(this, new OnPlayPrivateLobbyCreateClickedArgs
             {
-                betData = new LobbyBetSelect.BetData
+                betData = new BetDataSO.BetData
                 {
                     WinAmount = currentBetData.WinAmount,
                     GameMode = lobbyNameInputField.text,
@@ -101,7 +101,7 @@ public class PrivateLobbyUi : MonoBehaviour
     {
         LobbyBetSelect.Instance.OnBetModified += LobbyBetSelect_OnBetModified;
 
-        currentBetData = LobbyBetSelect.Instance.BetDatas[0];
+        currentBetData = LobbyBetSelect.Instance.BetDataSO.BetDataSOList[0];
         UpdateBetUi(currentBetData);
     }
 
@@ -125,7 +125,7 @@ public class PrivateLobbyUi : MonoBehaviour
         UpdateBetUi(e.selectedBet);
     }
 
-    private void UpdateBetUi(LobbyBetSelect.BetData betData)
+    private void UpdateBetUi(BetDataSO.BetData betData)
     {
         winAmountTextMeshProUGUI.text = betData.WinAmount.ToString();
         entryAmountTextMeshProUGUI.text = "Entry: " + betData.EntryAmount.ToString();

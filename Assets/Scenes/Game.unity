@@ -3769,6 +3769,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 8552523740109549960, guid: 1a533854d9b6b8e4898d0356c46165ae, type: 3}
+  betDataSO: {fileID: 11400000, guid: 2cdf9221582a3a44dbf808f584b17a97, type: 2}
+  LobbyType: 0
 --- !u!4 &1085932987
 Transform:
   m_ObjectHideFlags: 0
@@ -4198,7 +4200,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000015258789
+      value: 0.00006866455
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y

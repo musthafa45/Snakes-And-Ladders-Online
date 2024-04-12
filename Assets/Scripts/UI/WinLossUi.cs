@@ -100,12 +100,12 @@ public class WinLossUi : MonoBehaviour
 
     private float GetTotalBetAmountFromLobbyName(string matchName)
     {
-        return LobbyBetSelect.Instance.BetDatas.Where(betData => betData.GameMode == matchName).FirstOrDefault().WinAmount;
+        return GameManager.LocalInstance.BetDataSO.BetDataSOList.Where(betData => betData.GameMode == matchName).FirstOrDefault().WinAmount;
     }
 
     private float GetEntryBetAmountFromLobbyName(string matchName)
     {
-        return LobbyBetSelect.Instance.BetDatas.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
+        return GameManager.LocalInstance.BetDataSO.BetDataSOList.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
     }
 
     private void SAL_Multiplayer_OnClientDisconnected(object sender, SnakesAndLaddersMultiplayer.OnClientDisconnectedArgs e)

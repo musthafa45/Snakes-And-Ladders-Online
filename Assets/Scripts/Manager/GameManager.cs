@@ -11,7 +11,13 @@ public class GameManager : NetworkBehaviour
 
     public static event Action<GameManager> OnAnyGameManagerSpawned;
 
+    public BetDataSO BetDataSO => betDataSO;
+
     [SerializeField] private Transform playerPrefab;
+    [SerializeField] private BetDataSO betDataSO;
+
+    [HideInInspector] public SnakesAndLaddersLobby.LobbyType LobbyType;
+    [HideInInspector] public Lobby JoinedLobby = null;
 
     private void Awake()
     {
@@ -49,7 +55,8 @@ public class GameManager : NetworkBehaviour
         SelectRandomPlayerForFirstMoveServerRpc(selectedPlayerId);
         SetPlayerNamesServerRpc();
 
-        SetBetData();
+        LobbyType = SnakesAndLaddersLobby.Instance.GetLobbyType();
+        JoinedLobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
 
         SnakesAndLaddersLobby.Instance.DeleteLobby();
     }
@@ -63,14 +70,7 @@ public class GameManager : NetworkBehaviour
 
     private float GetEntryBetAmountFromLobbyName(string matchName)
     {
-        return LobbyBetSelect.Instance.BetDatas.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
-    }
-
-    private void SetBetData()
-    {
-        Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
-        Debug.Log("Current Lobby is " + lobby.Name);
-        //betData = LobbyBetSelect.Instance.ActiveSelectedBet; dont use this Use Lobby Data
+        return betDataSO.BetDataSOList.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
     }
 
     [ServerRpc(RequireOwnership = false)]

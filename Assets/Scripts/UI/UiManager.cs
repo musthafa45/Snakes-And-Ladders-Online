@@ -48,29 +48,29 @@ public class UiManager : MonoBehaviour
     {
         if(winLocalClientId == NetworkManager.Singleton.LocalClientId)
         {
-            if(SnakesAndLaddersLobby.Instance.GetLobbyType() == SnakesAndLaddersLobby.LobbyType.QuickMatch)
+            if(GameManager.LocalInstance.LobbyType == SnakesAndLaddersLobby.LobbyType.QuickMatch)
             {
                 Debug.Log("You Won Quick Match");
                 OnPlayerWonQuickmatch?.Invoke(this, EventArgs.Empty);
             }
-            else if(SnakesAndLaddersLobby.Instance.GetLobbyType() == SnakesAndLaddersLobby.LobbyType.SelectLobby)
+            else if(GameManager.LocalInstance.LobbyType == SnakesAndLaddersLobby.LobbyType.SelectLobby)
             {
-                Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
+                Lobby lobby = GameManager.LocalInstance.JoinedLobby;
                 Debug.Log("You Won Select Lobby Match " + lobby.Name);
                 OnPlayerWonSelectLobbyMatch?.Invoke(this, new OnPlayerWonSelectLobbyMatchArgs { lobby = lobby});
             }
         }
         else
         {
-            if (SnakesAndLaddersLobby.Instance.GetLobbyType() == SnakesAndLaddersLobby.LobbyType.QuickMatch)
+            if (GameManager.LocalInstance.LobbyType == SnakesAndLaddersLobby.LobbyType.QuickMatch)
             {
                 Debug.Log("You Loss Quick Match");
                 OnPlayerLossQuickMatch?.Invoke(this, EventArgs.Empty);
 
             }
-            else if (SnakesAndLaddersLobby.Instance.GetLobbyType() == SnakesAndLaddersLobby.LobbyType.SelectLobby)
+            else if (GameManager.LocalInstance.LobbyType == SnakesAndLaddersLobby.LobbyType.SelectLobby)
             {
-                Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
+                Lobby lobby = GameManager.LocalInstance.JoinedLobby;
                 Debug.Log("You Loss Select Lobby Match " + lobby.Name);
                 OnPlayerLossSelectLobbyMatch?.Invoke(this, new OnPlayerLossSelectLobbyMatchArgs { lobby = lobby });
             }

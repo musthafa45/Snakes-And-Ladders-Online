@@ -14,7 +14,7 @@ public class SelectLobbyUi : MonoBehaviour
     public event EventHandler<OnPlayButtonClickedArgs> OnPlayButtonClicked;
     public class OnPlayButtonClickedArgs : EventArgs
     {
-        public LobbyBetSelect.BetData betData;
+        public BetDataSO.BetData betData;
     }
 
     [SerializeField] private TextMeshProUGUI availableCoinTextMeshProUGUI;
@@ -33,7 +33,7 @@ public class SelectLobbyUi : MonoBehaviour
     [SerializeField] private Button mainMenuButton;
 
     private bool isPrivate = false;
-    private LobbyBetSelect.BetData currentBetData;
+    private BetDataSO.BetData currentBetData;
 
     private void Awake()
     {
@@ -90,7 +90,7 @@ public class SelectLobbyUi : MonoBehaviour
 
         InitializeLobbyUi();
         
-        currentBetData = LobbyBetSelect.Instance.BetDatas[0];
+        currentBetData = LobbyBetSelect.Instance.BetDataSO.BetDataSOList[0];
         UpdateBetUi(currentBetData);
     }
 
@@ -117,7 +117,7 @@ public class SelectLobbyUi : MonoBehaviour
         UpdateBetUi(e.selectedBet);
     }
 
-    private void UpdateBetUi(LobbyBetSelect.BetData betData)
+    private void UpdateBetUi(BetDataSO.BetData betData)
     {
         winAmountTextMeshProUGUI.text = betData.WinAmount.ToString();
         entryAmountTextMeshProUGUI.text = "Entry: " + betData.EntryAmount.ToString();
