@@ -24,7 +24,7 @@ public static class PlayerWallet
         });
     }
 
-    public static void DetuctCash(float amount)
+    public static void RemoveCash(float amount)
     {
         cashAmount -= amount;
 

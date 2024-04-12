@@ -19,8 +19,15 @@ public class PlayerProfileSetupUI : MonoBehaviour
 
         inputFieldPlayerName.onValueChanged.AddListener((value) =>
         {
-            okButton.interactable = inputFieldPlayerName.text != "" && inputFieldPlayerName.text.Length <= 10;
+            ValidatePlayerNameInputField();
         });
+
+        ValidatePlayerNameInputField();
+    }
+
+    private void ValidatePlayerNameInputField()
+    {
+        okButton.interactable = inputFieldPlayerName.text != "" && inputFieldPlayerName.text.Length <= 10;
     }
 
     public void Show()

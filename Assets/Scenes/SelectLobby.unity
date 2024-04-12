@@ -1652,7 +1652,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connectionMsgTextMeshProUGUI: {fileID: 1417520505}
-  okButton: {fileID: 673852947}
 --- !u!114 &559507272 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1085659913805677808, guid: 3189b8823088ebb47a3b9c2da5a390fd, type: 3}
@@ -5864,7 +5863,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 196}
   m_SizeDelta: {x: 600, y: 185.3307}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1759543859
@@ -6974,7 +6973,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000022888184
+      value: -0.00008392334
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y

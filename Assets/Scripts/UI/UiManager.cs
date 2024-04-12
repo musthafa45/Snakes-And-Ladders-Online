@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class UiManager : MonoBehaviour
 
 
     [SerializeField] private Button menuButton;
+    [SerializeField] private TextMeshProUGUI LobbyNameText;
     private void Awake()
     {
         Instance = this;
@@ -30,6 +32,16 @@ public class UiManager : MonoBehaviour
             SnakesAndLaddersLobby.Instance.LeaveLobby();
             Loader.LoadScene(Loader.Scene.MainMenu);
         });
+    }
+
+    private void Start()
+    {
+        SetLobbyName();
+    }
+
+    private void SetLobbyName()
+    {
+        LobbyNameText.text = SnakesAndLaddersLobby.Instance.GetJoinedLobby().Name;
     }
 
     public void ShowGameFinishedUi(ulong winLocalClientId)

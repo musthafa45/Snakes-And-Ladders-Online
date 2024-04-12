@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -11,8 +12,6 @@ public class GameManager : NetworkBehaviour
     public static event Action<GameManager> OnAnyGameManagerSpawned;
 
     [SerializeField] private Transform playerPrefab;
-
-    private LobbyBetSelect.BetData betData;
 
     private void Awake()
     {
@@ -33,6 +32,8 @@ public class GameManager : NetworkBehaviour
 
     private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
+        DetuctEntryFees();
+
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             Transform playerTransform = Instantiate(playerPrefab);
@@ -51,6 +52,18 @@ public class GameManager : NetworkBehaviour
         SetBetData();
 
         SnakesAndLaddersLobby.Instance.DeleteLobby();
+    }
+
+    private void DetuctEntryFees()
+    {
+        Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
+        float entryMatchAmount = GetEntryBetAmountFromLobbyName(lobby.Name);
+        PlayerWallet.RemoveCash(entryMatchAmount);
+    }
+
+    private float GetEntryBetAmountFromLobbyName(string matchName)
+    {
+        return LobbyBetSelect.Instance.BetDatas.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
     }
 
     private void SetBetData()
