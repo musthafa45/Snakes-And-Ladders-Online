@@ -16,11 +16,11 @@ public class PlayerProfileSetup : MonoBehaviour
         if (string.IsNullOrEmpty(playerName))
         {
             // Player Not Yet Set Name
-            playerProfileSetupUI.gameObject.SetActive(true);
+            playerProfileSetupUI.Show();
         }
         else
         {
-            playerProfileSetupUI.gameObject.SetActive(false);
+            playerProfileSetupUI.Hide();
             // Player Already Setupped
         }
     }

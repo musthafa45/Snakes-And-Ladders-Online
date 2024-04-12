@@ -17,7 +17,7 @@ public class PlayerProfileUi : MonoBehaviour
 
         editNameButton.onClick.AddListener(() =>
         {
-            playerProfileSetupUI.gameObject.SetActive(true);
+            playerProfileSetupUI.Show();
         });
     }
 

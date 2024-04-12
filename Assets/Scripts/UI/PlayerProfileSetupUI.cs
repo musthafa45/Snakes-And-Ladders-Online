@@ -7,6 +7,8 @@ public class PlayerProfileSetupUI : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputFieldPlayerName;
     [SerializeField] private Button okButton;
+    [SerializeField] private Transform playerNameSetupUiParent;
+
 
     private void Awake()
     {
@@ -17,9 +19,15 @@ public class PlayerProfileSetupUI : MonoBehaviour
         });
     }
 
-    private void Hide()
+
+    public void Show()
     {
-        gameObject.SetActive(false);
+        playerNameSetupUiParent.gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        playerNameSetupUiParent.gameObject.SetActive(false);
     }
 
     private void Update()
