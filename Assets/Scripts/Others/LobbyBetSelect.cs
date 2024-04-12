@@ -101,5 +101,6 @@ public class LobbyBetSelect : MonoBehaviour
         public string GameMode;
         public float WinAmount;
         public float EntryAmount;
+        public Sprite GameLogoSprite;
     }
 }

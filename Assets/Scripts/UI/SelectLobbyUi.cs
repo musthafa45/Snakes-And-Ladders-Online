@@ -2,7 +2,6 @@ using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SelectLobbyUi : MonoBehaviour
@@ -26,6 +25,7 @@ public class SelectLobbyUi : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lobbyNameTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI winAmountTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI entryAmountTextMeshProUGUI;
+    [SerializeField] private Image gameModeLogoImage;
     [SerializeField] private TMP_Dropdown dropDown;
 
     [SerializeField] private Transform publicLobbyParent, privateLobbyParent;
@@ -122,6 +122,7 @@ public class SelectLobbyUi : MonoBehaviour
         winAmountTextMeshProUGUI.text = betData.WinAmount.ToString();
         entryAmountTextMeshProUGUI.text = "Entry: " + betData.EntryAmount.ToString();
         lobbyNameTextMeshProUGUI.text = betData.GameMode;
+        gameModeLogoImage.sprite = betData.GameLogoSprite;
 
         playButton.interactable = IsPlayerHasSufficiantEntryAmount(betData.EntryAmount);
     }

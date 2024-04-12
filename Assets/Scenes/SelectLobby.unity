@@ -222,6 +222,7 @@ MonoBehaviour:
   lobbyNameTextMeshProUGUI: {fileID: 722384828}
   winAmountTextMeshProUGUI: {fileID: 7614745634360845210}
   entryAmountTextMeshProUGUI: {fileID: 7614745634360845209}
+  gameModeLogoImage: {fileID: 7614745634360845211}
   dropDown: {fileID: 114521987}
   publicLobbyParent: {fileID: 1117101061}
   privateLobbyParent: {fileID: 1006102652}
@@ -486,30 +487,39 @@ MonoBehaviour:
   - GameMode: Bronze
     WinAmount: 1000
     EntryAmount: 500
+    GameLogoSprite: {fileID: 1605627477, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Silver
     WinAmount: 4000
     EntryAmount: 2000
+    GameLogoSprite: {fileID: 1779344737, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Gold
     WinAmount: 10000
     EntryAmount: 5000
+    GameLogoSprite: {fileID: 1985408668, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Diamond
     WinAmount: 20000
     EntryAmount: 10000
+    GameLogoSprite: {fileID: -580322118, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Platinum
     WinAmount: 50000
     EntryAmount: 25000
+    GameLogoSprite: {fileID: -2031943772, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Ace
     WinAmount: 100000
     EntryAmount: 50000
+    GameLogoSprite: {fileID: 1880910556, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Conquerer
     WinAmount: 200000
     EntryAmount: 100000
+    GameLogoSprite: {fileID: 1889374959, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Skull
     WinAmount: 950000
     EntryAmount: 500000
+    GameLogoSprite: {fileID: 1016310556, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
   - GameMode: Legend
     WinAmount: 2000000
     EntryAmount: 1000000
+    GameLogoSprite: {fileID: -1123514087, guid: a5e645d0b2507ac42807ef8e886f7d45, type: 3}
 --- !u!1 &175601868
 GameObject:
   m_ObjectHideFlags: 0
@@ -3520,6 +3530,7 @@ MonoBehaviour:
   betDecreaseBtn: {fileID: 681256993}
   winAmountTextMeshProUGUI: {fileID: 1725371864}
   entryAmountTextMeshProUGUI: {fileID: 559507272}
+  gameModeLogoImage: {fileID: 1617206213}
   createLobbyMenuButton: {fileID: 1924702232}
   joinLobbyMenuButton: {fileID: 1880276451}
   createLobbyMenuParent: {fileID: 684233631}
@@ -5378,6 +5389,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 710872101753571486, guid: 3189b8823088ebb47a3b9c2da5a390fd, type: 3}
   m_PrefabInstance: {fileID: 1617206211}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1617206213 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2026275247419062463, guid: 3189b8823088ebb47a3b9c2da5a390fd, type: 3}
+  m_PrefabInstance: {fileID: 1617206211}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1621184005
 GameObject:
   m_ObjectHideFlags: 0
@@ -6952,7 +6974,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 224130951485110974, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000038146973
+      value: -0.000022888184
       objectReference: {fileID: 0}
     - target: {fileID: 224166536479716514, guid: 9ed2a051c32b4fe47a5e4fb95c20b03f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -7587,6 +7609,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7614745634360845211 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2026275247419062463, guid: 3189b8823088ebb47a3b9c2da5a390fd, type: 3}
+  m_PrefabInstance: {fileID: 7614745634360845207}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807

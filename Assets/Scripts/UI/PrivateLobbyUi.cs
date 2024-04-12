@@ -30,7 +30,7 @@ public class PrivateLobbyUi : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI winAmountTextMeshProUGUI;
     [SerializeField] private TextMeshProUGUI entryAmountTextMeshProUGUI;
-
+    [SerializeField] private Image gameModeLogoImage;
 
     private LobbyBetSelect.BetData currentBetData;
 
@@ -129,6 +129,7 @@ public class PrivateLobbyUi : MonoBehaviour
     {
         winAmountTextMeshProUGUI.text = betData.WinAmount.ToString();
         entryAmountTextMeshProUGUI.text = "Entry: " + betData.EntryAmount.ToString();
+        gameModeLogoImage.sprite = betData.GameLogoSprite;
 
         CreateLobbyButton.interactable = IsPlayerHasSufficiantEntryAmount(betData.EntryAmount);
     }
