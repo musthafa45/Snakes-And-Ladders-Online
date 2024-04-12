@@ -147,15 +147,15 @@ public class PlayerLocal : NetworkBehaviour
             GameManager.LocalInstance.OnPlayerWin(NetworkManager.Singleton.LocalClientId);
         }
 
-        if (isMovingBack)
-        {
-            if (standingTileId == 1)
-            {
-                isMovingBack = false;
-                Debug.Log("Player Win");
-                GameManager.LocalInstance.OnPlayerWin(NetworkManager.Singleton.LocalClientId);
-            }
-        }
+        //if (isMovingBack)
+        //{
+        //    if (standingTileId == 1)
+        //    {
+        //        isMovingBack = false;
+        //        Debug.Log("Player Win");
+        //        GameManager.LocalInstance.OnPlayerWin(NetworkManager.Singleton.LocalClientId);
+        //    }
+        //}
     }
 
     private IEnumerator MoveToSnakeTail(int targetTileId,Action OntailPosReached  =null)

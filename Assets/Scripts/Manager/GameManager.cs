@@ -16,8 +16,8 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private Transform playerPrefab;
     [SerializeField] private BetDataSO betDataSO;
 
-    [HideInInspector] public SnakesAndLaddersLobby.LobbyType LobbyType;
-    [HideInInspector] public Lobby JoinedLobby = null;
+    public SnakesAndLaddersLobby.LobbyType LobbyType;
+    public Lobby JoinedLobby = null;
 
     private void Awake()
     {
@@ -38,8 +38,6 @@ public class GameManager : NetworkBehaviour
 
     private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
-        DetuctEntryFees();
-
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
             Transform playerTransform = Instantiate(playerPrefab);
@@ -54,14 +52,33 @@ public class GameManager : NetworkBehaviour
 
         SelectRandomPlayerForFirstMoveServerRpc(selectedPlayerId);
         SetPlayerNamesServerRpc();
+        DetuctEntryFeesServerRpc();
+        InitializeGameServerRpc();
+    }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void InitializeGameServerRpc()
+    {
+       InitializeGameClientRpc();
+    }
+
+    [ClientRpc]
+    private void InitializeGameClientRpc()
+    {
         LobbyType = SnakesAndLaddersLobby.Instance.GetLobbyType();
         JoinedLobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
 
         SnakesAndLaddersLobby.Instance.DeleteLobby();
     }
 
-    private void DetuctEntryFees()
+    [ServerRpc(RequireOwnership = false)]
+    private void DetuctEntryFeesServerRpc()
+    {
+       DetuctEntryFeesClientRpc();
+    }
+
+    [ClientRpc]
+    private void DetuctEntryFeesClientRpc()
     {
         Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
         float entryMatchAmount = GetEntryBetAmountFromLobbyName(lobby.Name);

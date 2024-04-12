@@ -23,7 +23,7 @@ public class WinLossUi : MonoBehaviour
 
     private void Start()
     {
-        SnakesAndLaddersMultiplayer.Instance.OnClientDisconnected += SAL_Multiplayer_OnClientDisconnected;
+        //SnakesAndLaddersMultiplayer.Instance.OnClientDisconnected += SAL_Multiplayer_OnClientDisconnected;
 
         UiManager.Instance.OnPlayerWonQuickmatch += UiManager_OnPlayerWonQuickmatch;
         UiManager.Instance.OnPlayerLossQuickMatch += UiManager_OnPlayerLossQuickMatch;
@@ -52,7 +52,6 @@ public class WinLossUi : MonoBehaviour
         Show();
 
         float entryAmount = GetEntryBetAmountFromLobbyName(e.lobby.Name);
-        PlayerWallet.RemoveCash(entryAmount);
 
         SetMessageHeadText("You Loss");
         SetMessageMatchName($"You Loss {e.lobby.Name}");
