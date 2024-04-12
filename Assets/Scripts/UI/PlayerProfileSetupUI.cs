@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,8 +16,12 @@ public class PlayerProfileSetupUI : MonoBehaviour
             PlayerProfileSetup.Instance.SetPlayerName(inputFieldPlayerName.text);
             Hide();
         });
-    }
 
+        inputFieldPlayerName.onValueChanged.AddListener((value) =>
+        {
+            okButton.interactable = inputFieldPlayerName.text != "" && inputFieldPlayerName.text.Length <= 10;
+        });
+    }
 
     public void Show()
     {
@@ -28,10 +31,5 @@ public class PlayerProfileSetupUI : MonoBehaviour
     public void Hide()
     {
         playerNameSetupUiParent.gameObject.SetActive(false);
-    }
-
-    private void Update()
-    {
-        okButton.interactable = inputFieldPlayerName.text != "";
     }
 }

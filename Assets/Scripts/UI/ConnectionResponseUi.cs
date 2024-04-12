@@ -7,17 +7,10 @@ public class ConnectionResponseUi : MonoBehaviour
     public static ConnectionResponseUi Instance { get; private set; }
 
     [SerializeField] private TextMeshProUGUI connectionMsgTextMeshProUGUI;
-    [SerializeField] private Button okButton;
-
 
     private void Awake()
     {
         Instance = this;
-
-        okButton.onClick.AddListener(() =>
-        {
-            Loader.LoadScene(Loader.Scene.MainMenu);
-        });
     }
 
     private void Start()
