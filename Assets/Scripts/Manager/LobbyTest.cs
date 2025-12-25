@@ -120,7 +120,7 @@ public class LobbyTest : MonoBehaviour
 
             };
 
-           QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
+           QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
            Debug.Log($"Lobby Count{ queryResponse.Results.Count}");
 
             foreach(Lobby lobby in queryResponse.Results)
@@ -140,9 +140,9 @@ public class LobbyTest : MonoBehaviour
     {
         try
         {
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+            QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync();
 
-            joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id);
+            joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id);
 
             Debug.Log("Joined Lobby Name = " + joinedLobby.Name);
         }
@@ -157,7 +157,7 @@ public class LobbyTest : MonoBehaviour
     {
         try
         {
-            joinedLobby = await Lobbies.Instance.JoinLobbyByCodeAsync(lobbyCode);
+            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode);
 
             Debug.Log("Joined Lobby Name = " + joinedLobby.Name +" With Lobby Code"+joinedLobby.LobbyCode);
         }
@@ -193,7 +193,7 @@ public class LobbyTest : MonoBehaviour
     {
         try
         {
-            hostLobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+            hostLobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
                 Data = new Dictionary<string, DataObject>
                 {
@@ -250,7 +250,7 @@ public class LobbyTest : MonoBehaviour
     {
         try
         {
-            hostLobby = await Lobbies.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
+            hostLobby = await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
             {
                HostId = joinedLobby.Players[1].Id
             });

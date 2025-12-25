@@ -13,6 +13,7 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 
+
 public class SnakesAndLaddersLobby : MonoBehaviour
 {
     public static SnakesAndLaddersLobby Instance { get; private set; }
@@ -103,73 +104,80 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
 
 
-    private async void CreatePrivateLobby(BetDataSO.BetData betData)
-    {
-        try
-        {
+    private async void CreatePrivateLobby(BetDataSO.BetData betData) {
+        try {
             // Creating New Lobby With Given details
             int maxPlayer = 2;
-
-            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
-            {
+            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions {
                 IsPrivate = true,
-
                 Player = GetPlayer(),
             };
 
             joinedLobby = await LobbyService.Instance.CreateLobbyAsync(betData.GameMode, maxPlayer, createLobbyOptions);
 
+            // Create relay allocation
             Allocation allocation = await AllocationRelay();
-
             string relayJoinCode = await GetRelayJoinCode(allocation);
 
-            await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
-            {
+            // Update lobby with relay code
+            await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
                 Data = new Dictionary<string, DataObject>
-            {
-                {"RelayCode" , new DataObject(DataObject.VisibilityOptions.Member,relayJoinCode) }
+                {
+                {"RelayCode", new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode)}
             },
             });
 
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+            // UPDATED: Set relay server data with new API
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+                allocation.RelayServer.IpV4,
+                (ushort)allocation.RelayServer.Port,
+                allocation.AllocationIdBytes,
+                allocation.Key,
+                allocation.ConnectionData
+            );
 
+            // Start as host
             SnakesAndLaddersMultiplayer.Instance.StartHost();
 
             Debug.Log("Created private Lobby " + joinedLobby.Name + " And Code " + joinedLobby.LobbyCode);
-            OnPlayerCreatedPrivateLobby?.Invoke(joinedLobby.LobbyCode,joinedLobby.Name);
+            OnPlayerCreatedPrivateLobby?.Invoke(joinedLobby.LobbyCode, joinedLobby.Name);
         }
-        catch (LobbyServiceException e)
-        {
+        catch (LobbyServiceException e) {
             Debug.Log(e);
         }
-
     }
-    private async void JoinPrivateLobby(string lobbyCode)
-    {
-        try
-        {
-            JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions();
-            joinLobbyByCodeOptions.Player = GetPlayer();
 
-            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode,joinLobbyByCodeOptions);
+    private async void JoinPrivateLobby(string lobbyCode) {
+        try {
+            JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions {
+                Player = GetPlayer()
+            };
 
+            joinedLobby = await LobbyService.Instance.JoinLobbyByCodeAsync(lobbyCode, joinLobbyByCodeOptions);
+
+            // Join relay using the code from lobby data
             JoinAllocation joinAllocation = await JoinRelay(joinedLobby.Data["RelayCode"].Value);
 
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+            // UPDATED: Set relay server data with new API (CLIENT VERSION)
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+                joinAllocation.RelayServer.IpV4,
+                (ushort)joinAllocation.RelayServer.Port,
+                joinAllocation.AllocationIdBytes,
+                joinAllocation.Key,
+                joinAllocation.ConnectionData,
+                joinAllocation.HostConnectionData  // IMPORTANT: Clients need this!
+            );
 
+            // Start as client
             SnakesAndLaddersMultiplayer.Instance.StartClient();
 
             Debug.Log("Joined Lobby By Code " + joinedLobby.Name);
-
             ListPlayers();
         }
-        catch (LobbyServiceException e)
-        {
+        catch (LobbyServiceException e) {
             OnPrivateLobbyJoinFailed?.Invoke(this, EventArgs.Empty);
-
             Debug.LogException(e);
         }
-        
     }
 
     private async Task HandleLobbyUpdate()
@@ -195,68 +203,75 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
-    private async void CreateOrJoinLobby()
-    {
-        try
-        {
+    private async void CreateOrJoinLobby() {
+        try {
             QueryResponse queryResponse = await GetAvailableLobbies();
 
-            if(queryResponse.Results.Count > 0)
-            {
-                JoinLobbyByIdOptions joinLobbyByIdOptions = new();
-                joinLobbyByIdOptions.Player = GetPlayer();
-                
-                joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id,joinLobbyByIdOptions);
+            if (queryResponse.Results.Count > 0) {
+                // JOIN EXISTING LOBBY
+                JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions {
+                    Player = GetPlayer()
+                };
 
+                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id, joinLobbyByIdOptions);
+
+                // Join relay
                 JoinAllocation joinAllocation = await JoinRelay(joinedLobby.Data["RelayCode"].Value);
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+                // UPDATED: Set relay server data for CLIENT (with HostConnectionData)
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+                    joinAllocation.RelayServer.IpV4,
+                    (ushort)joinAllocation.RelayServer.Port,
+                    joinAllocation.AllocationIdBytes,
+                    joinAllocation.Key,
+                    joinAllocation.ConnectionData,
+                    joinAllocation.HostConnectionData  // CLIENT needs this
+                );
 
                 SnakesAndLaddersMultiplayer.Instance.StartClient();
-
                 Debug.Log("Joined Already Created Lobby " + joinedLobby.Name);
-
                 ListPlayers();
             }
-            else
-            {
-                Debug.LogWarning("Cant Found One Lobby To Join & try Creating Lobby");
+            else {
+                // CREATE NEW LOBBY
+                Debug.LogWarning("Can't find lobby to join, creating new lobby");
 
                 string lobbyName = "Quick Lobby";
                 int maxPlayer = 2;
-
-                CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
-                {
+                CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions {
                     Player = GetPlayer(),
                 };
 
                 joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayer, createLobbyOptions);
 
+                // Create relay allocation
                 Allocation allocation = await AllocationRelay();
-
                 string relayJoinCode = await GetRelayJoinCode(allocation);
 
-                await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
-                {
+                // Update lobby with relay code
+                await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
                     Data = new Dictionary<string, DataObject>
                     {
-                        {"RelayCode" , new DataObject(DataObject.VisibilityOptions.Member,relayJoinCode) }
-                    },
+                    {"RelayCode", new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode)}
+                },
                 });
 
-                if(NetworkManager.Singleton != null && NetworkManager.Singleton.TryGetComponent(out UnityTransport unityTransport))
-                {
-                    unityTransport.SetRelayServerData(new RelayServerData(allocation, "dtls"));
+                // UPDATED: Set relay server data for HOST (without HostConnectionData)
+                if (NetworkManager.Singleton != null && NetworkManager.Singleton.TryGetComponent(out UnityTransport unityTransport)) {
+                    unityTransport.SetRelayServerData(
+                        allocation.RelayServer.IpV4,
+                        (ushort)allocation.RelayServer.Port,
+                        allocation.AllocationIdBytes,
+                        allocation.Key,
+                        allocation.ConnectionData
+                    );
                 }
 
                 SnakesAndLaddersMultiplayer.Instance.StartHost();
-
                 Debug.Log("Created Lobby And Joined " + joinedLobby.Name);
             }
-
         }
-        catch (LobbyServiceException e)
-        {
+        catch (LobbyServiceException e) {
             Debug.Log(e);
         }
     }
@@ -294,79 +309,83 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
-    private async void CreateOrJoinLobby(string gameMode)
-    {
-        try
-        {
+    private async void CreateOrJoinLobby(string gameMode) {
+        try {
             QueryResponse queryResponse = await GetSelectedModeLobbies(gameMode);
+            Debug.Log("Selected Mode Lobbies " + gameMode + " Count: " + queryResponse.Results.Count);
 
-            Debug.Log("Selected Mode Lobbies "+ gameMode + queryResponse.Results.Count);
-
-            foreach (Lobby lobby in queryResponse.Results)
-            {
+            foreach (Lobby lobby in queryResponse.Results) {
                 Debug.Log("Lobby " + lobby.Name);
             }
 
-            if (queryResponse.Results.Count > 0)
-            {
-                JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions
-                {
+            if (queryResponse.Results.Count > 0) {
+                // JOIN EXISTING LOBBY
+                JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions {
                     Player = GetPlayer(),
                 };
 
-                joinedLobby = await Lobbies.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id,joinLobbyByIdOptions);                
+                // FIXED: Use LobbyService.Instance instead of Lobbies.Instance
+                joinedLobby = await LobbyService.Instance.JoinLobbyByIdAsync(queryResponse.Results[0].Id, joinLobbyByIdOptions);
 
+                // Join relay
                 JoinAllocation joinAllocation = await JoinRelay(joinedLobby.Data["RelayCode"].Value);
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "dtls"));
+                // UPDATED: Set relay server data for CLIENT (with HostConnectionData)
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+                    joinAllocation.RelayServer.IpV4,
+                    (ushort)joinAllocation.RelayServer.Port,
+                    joinAllocation.AllocationIdBytes,
+                    joinAllocation.Key,
+                    joinAllocation.ConnectionData,
+                    joinAllocation.HostConnectionData  // CLIENT needs this
+                );
 
                 SnakesAndLaddersMultiplayer.Instance.StartClient();
-
                 Debug.Log("Joined Already Created Lobby " + joinedLobby.Name);
-
                 ListPlayers();
             }
-            else
-            {
-                // Creating New Lobby With Given details
-                Debug.LogWarning("Cant Found One Lobby To Join & try Creating Lobby");
+            else {
+                // CREATE NEW LOBBY
+                Debug.LogWarning("Can't find lobby to join, creating new lobby");
 
                 string lobbyName = gameMode;
                 int maxPlayer = 2;
-
-                CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
-                {
+                CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions {
                     Player = GetPlayer(),
                     Data = new Dictionary<string, DataObject>
                     {
-                        {"GameMode" , new DataObject(DataObject.VisibilityOptions.Public,gameMode) },
-                    }
+                    {"GameMode", new DataObject(DataObject.VisibilityOptions.Public, gameMode)},
+                }
                 };
 
                 joinedLobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayer, createLobbyOptions);
 
+                // Create relay allocation
                 Allocation allocation = await AllocationRelay();
-
                 string relayJoinCode = await GetRelayJoinCode(allocation);
 
-                await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions
-                {
+                // Update lobby with relay code
+                await LobbyService.Instance.UpdateLobbyAsync(joinedLobby.Id, new UpdateLobbyOptions {
                     Data = new Dictionary<string, DataObject>
                     {
-                        {"RelayCode" , new DataObject(DataObject.VisibilityOptions.Member,relayJoinCode) }
-                    },
+                    {"RelayCode", new DataObject(DataObject.VisibilityOptions.Member, relayJoinCode)}
+                },
                 });
 
-                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "dtls"));
+                // UPDATED: Set relay server data for HOST (without HostConnectionData)
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(
+                    allocation.RelayServer.IpV4,
+                    (ushort)allocation.RelayServer.Port,
+                    allocation.AllocationIdBytes,
+                    allocation.Key,
+                    allocation.ConnectionData
+                );
 
                 SnakesAndLaddersMultiplayer.Instance.StartHost();
-
                 Debug.Log("Created Lobby And Joined " + joinedLobby.Name);
             }
-
         }
-        catch (LobbyServiceException e)
-        {
+        catch (LobbyServiceException e) {
             Debug.Log(e);
         }
     }
@@ -414,34 +433,27 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
-    public async Task<QueryResponse> GetAvailableLobbies()
-    {
-        try
-        {
-            QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions
-            {
+    public async Task<QueryResponse> GetAvailableLobbies() {
+        try {
+            QueryLobbiesOptions queryLobbiesOptions = new QueryLobbiesOptions {
                 Count = 10,
-
                 Filters = new List<QueryFilter> {
-                    new QueryFilter(QueryFilter.FieldOptions.AvailableSlots,"0",QueryFilter.OpOptions.GT)
-                },
+                new QueryFilter(QueryFilter.FieldOptions.AvailableSlots, "0", QueryFilter.OpOptions.GT)
+            },
                 Order = new List<QueryOrder>
                 {
-                    new QueryOrder(asc: false, field: QueryOrder.FieldOptions.Created)
-                }
-
+                new QueryOrder(asc: false, field: QueryOrder.FieldOptions.Created)
+            }
             };
 
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
+            // FIXED: Use LobbyService.Instance instead of Lobbies.Instance
+            QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
             return queryResponse;
-
         }
-        catch (LobbyServiceException e)
-        {
+        catch (LobbyServiceException e) {
             Debug.Log(e);
             return default;
         }
-
     }
 
     public async Task<QueryResponse> GetSelectedModeLobbies(string gameMode)
@@ -462,7 +474,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
                     new QueryOrder(false , QueryOrder.FieldOptions.Created)
             };
 
-            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync(queryLobbiesOptions);
+            QueryResponse queryResponse = await LobbyService.Instance.QueryLobbiesAsync(queryLobbiesOptions);
             return queryResponse;
 
         }
