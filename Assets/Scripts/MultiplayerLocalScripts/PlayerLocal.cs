@@ -9,7 +9,12 @@ using UnityEngine;
 public class PlayerLocal : NetworkBehaviour
 {
     public static PlayerLocal LocalInstance { get; private set; }
+
     public static event EventHandler OnAnyPlayerSpawned;
+
+    public SpriteRenderer SpriteRenderer;
+    public Color32 LocalPlayerColor;
+    public Color32 OpponentPlayerColor;
 
     private DiceBoard diceBoard;
     private int standingTileId = 1;
@@ -22,10 +27,15 @@ public class PlayerLocal : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if(IsOwner)
-        {
+        // COLOR SETUP (runs on ALL clients)
+        if (IsOwner) {
+            SpriteRenderer.color = LocalPlayerColor;   // Red
             LocalInstance = this;
         }
+        else {
+            SpriteRenderer.color = OpponentPlayerColor; // Blue
+        }
+
 
         if (!IsOwner) return;
 
@@ -60,7 +70,10 @@ public class PlayerLocal : NetworkBehaviour
 
     private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId, short diceFaceValue)
     {
-        if (!IsOwner) return;
+        if (!IsOwner) { // Not Local Player
+            return;
+        }
+        // Local Player Rolled The Dice 
         SetTargetTileToMove(diceFaceValue);
     }
 
@@ -104,12 +117,12 @@ public class PlayerLocal : NetworkBehaviour
             if (!isMovingBack)
             {
                 targetTileId = standingTileId + 1 + i;
-                Debug.Log("player " + targetTileId);
+                //Debug.Log("player " + targetTileId);
             }
             else
             {
                 targetTileId = standingTileId - 1 - i;
-                Debug.Log("player " + targetTileId);
+                //Debug.Log("player " + targetTileId);
             }
 
             yield return new WaitForSeconds(0.3f);

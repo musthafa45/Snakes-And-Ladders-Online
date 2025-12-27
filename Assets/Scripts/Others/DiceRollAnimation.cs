@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,48 +10,58 @@ public class DiceRollAnimation : MonoBehaviour
     [SerializeField] private Image diceButtonImage;
     [SerializeField] private List<DiceData> diceDataList;
 
-    public void RollDice(Action<short> onRollFinishedWithFaceValueOut)
+    public void RollDice(short selectedFaceValue, Action OnRollAnimFinished)
     {
-        StartCoroutine(RollAnim(onRollFinishedWithFaceValueOut));
+        StartCoroutine(RollAnim(selectedFaceValue, OnRollAnimFinished));
     }
 
-    private IEnumerator RollAnim(Action<short> onRollFinishedWithFaceValueOut)
-    {
+    private IEnumerator RollAnim(short selectedFaceValue, Action OnRollAnimFinished) {
         float elapsedTime = 0f;
-        float duration = 1.2f; // Set the duration of the roll illusion
+        float duration = 1.2f;
 
-        while (elapsedTime < duration)
-        {
-            // Randomly change the dice face sprite during the illusion
+        while (elapsedTime < duration) {
             diceButtonImage.sprite = GetRandomDiceData().diceFaceSprite;
-
-            // Wait for a short time before the next change
             yield return new WaitForSeconds(0.08f);
-
-            // Update the elapsed time
             elapsedTime += 0.1f;
         }
 
-        // After the duration, set the final dice face sprite
-        DiceData finalDiceData = GetRandomDiceData();
-        diceButtonImage.sprite = finalDiceData.diceFaceSprite;
+        DiceData finalDiceData = diceDataList
+            .FirstOrDefault(d => d.diceFaceValue == selectedFaceValue);
 
-        onRollFinishedWithFaceValueOut?.Invoke(finalDiceData.diceFaceValue);
+        if (finalDiceData != null) {
+            diceButtonImage.sprite = finalDiceData.diceFaceSprite;
+
+            OnRollAnimFinished?.Invoke();
+        }
+        else {
+            Debug.LogError($"Dice face value {selectedFaceValue} not found!");
+        }
     }
 
-    private DiceData GetRandomDiceData()
-    {
-        // Implement logic to get a random DiceData from the diceDataList
-        // For example, you can use UnityEngine.Random.Range and diceDataList.Count
+    public void PlayOpponentDiceRoll(short faceValue) {
+        StartCoroutine(OpponentRollAnim(faceValue));
+    }
+
+    private IEnumerator OpponentRollAnim(short finalFaceValue) {
+        float elapsedTime = 0f;
+        float duration = 1.2f;
+
+        while (elapsedTime < duration) {
+            diceButtonImage.sprite = GetRandomDiceData().diceFaceSprite;
+            yield return new WaitForSeconds(0.08f);
+            elapsedTime += 0.1f;
+        }
+
+        DiceData finalDiceData = diceDataList
+            .Find(d => d.diceFaceValue == finalFaceValue);
+
+        diceButtonImage.sprite = finalDiceData.diceFaceSprite;
+    }
+
+    public List<DiceData> GetDiceDataList() => diceDataList;
+
+    private DiceData GetRandomDiceData() {
         int randomIndex = UnityEngine.Random.Range(0, diceDataList.Count);
         return diceDataList[randomIndex];
     }
-
-}
-
-[Serializable]
-public class DiceData
-{
-    public Sprite diceFaceSprite;
-    public short diceFaceValue;
 }

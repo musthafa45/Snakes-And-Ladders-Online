@@ -33,8 +33,48 @@ public class GameManager : NetworkBehaviour
         if(IsServer)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
     }
+
+    public override void OnDestroy() {
+        if (NetworkManager.Singleton != null) {
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
+        }
+    }
+
+    private void OnClientDisconnected(ulong clientId) {
+        Debug.Log($"Client {clientId} disconnected");
+
+        // If only one player remains auto win
+        if (NetworkManager.Singleton.ConnectedClientsIds.Count == 1) {
+            ulong winnerClientId = NetworkManager.Singleton.ConnectedClientsIds[0];
+            Debug.Log($"Player {winnerClientId} wins by disconnect");
+
+            AnnounceWinnerClientRpc(
+                winnerClientId,
+                new ClientRpcParams {
+                    Send = new ClientRpcSendParams {
+                        TargetClientIds = new[] { winnerClientId }
+                    }
+                }
+            );
+        }
+    }
+
+    [ClientRpc]
+    private void AnnounceWinnerClientRpc(
+       ulong winnerClientId,
+       ClientRpcParams clientRpcParams = default) {
+        Debug.Log("YOU WIN! Opponent disconnected.");
+
+        // TODO:
+        // Show Win UI
+        // Disable input
+        // Stop timers
+    }
+
+   
 
     private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
@@ -142,6 +182,7 @@ public class GameManager : NetworkBehaviour
     {
         SetPlayerWinClientRpc(localClientId);
     }
+
     [ClientRpc]
     private void SetPlayerWinClientRpc(ulong winlocalClientId)
     {
@@ -152,5 +193,34 @@ public class GameManager : NetworkBehaviour
     {
         PlayerLocal.OnAnyPlayerSpawned -= PlayerLocal_OnAnyPlayerSpawned;
         PlayerLocal.OnAnyPlayerSpawned += PlayerLocal_OnAnyPlayerSpawned;
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void SendDiceValueToOpponentServerRpc(
+    short diceFaceValue,
+    ServerRpcParams serverRpcParams = default) {
+        ulong senderClientId = serverRpcParams.Receive.SenderClientId;
+
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            if (clientId != senderClientId) {
+                SendDiceValueToOpponentClientRpc(
+                    diceFaceValue,
+                    new ClientRpcParams {
+                        Send = new ClientRpcSendParams {
+                            TargetClientIds = new[] { clientId }
+                        }
+                    }
+                );
+                break;
+            }
+        }
+    }
+
+    [ClientRpc]
+    private void SendDiceValueToOpponentClientRpc(short diceFaceValue, ClientRpcParams clientRpcParams = default) {
+
+        Debug.Log($"Opponent received dice value: {diceFaceValue}");
+        // Run opponent-side animation with SAME value
+        PlayerProfileStatsHandlerUI.Instance.DoOpponentSpin(diceFaceValue);
     }
 }

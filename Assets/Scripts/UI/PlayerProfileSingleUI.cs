@@ -1,8 +1,13 @@
 using System;
 using TMPro;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
+
+[Serializable]
+public class DiceData {
+    public Sprite diceFaceSprite;
+    public short diceFaceValue;
+}
 
 public class PlayerProfileSingleUI : MonoBehaviour
 {
@@ -15,6 +20,8 @@ public class PlayerProfileSingleUI : MonoBehaviour
     private DiceSelectorVisual diceSelectorVisual;
     private DiceRollAnimation diceRollAnimation;
 
+    private short diceFaceValue;
+
     private void Awake()
     {
         diceSelectorVisual = rollButton.gameObject.GetComponentInChildren<DiceSelectorVisual>();
@@ -23,17 +30,17 @@ public class PlayerProfileSingleUI : MonoBehaviour
         rollButton.onClick.AddListener(() =>
         {
             rollButton.interactable = false;
-            diceRollAnimation.RollDice((OnDiceRolledFaceValue) =>
-            {
-                OnAnyPlayerPressedRollButton?.Invoke((short)playerConnectedId,OnDiceRolledFaceValue);
-            });
-            
-        });
-        
-    }
 
-    private void Start()
-    {
+            diceFaceValue = GetRandomDiceData().diceFaceValue; // Get Random Dice Face Value
+
+            // Send rolled value to server
+            GameManager.LocalInstance.SendDiceValueToOpponentServerRpc(diceFaceValue); // for Opponent Animation
+
+            diceRollAnimation.RollDice(diceFaceValue,()=> { // Play Local Dice Animation
+                OnAnyPlayerPressedRollButton?.Invoke((short)playerConnectedId, diceFaceValue); // for Player Movement
+            }); 
+
+        });
         
     }
 
@@ -58,4 +65,14 @@ public class PlayerProfileSingleUI : MonoBehaviour
     {
         playerNameTextMeshProGui.text = playerName;
     }
+
+    private DiceData GetRandomDiceData() {
+        int randomIndex = UnityEngine.Random.Range(0, diceRollAnimation.GetDiceDataList().Count);
+        return diceRollAnimation.GetDiceDataList()[randomIndex];
+    }
+
+    public DiceRollAnimation GetDiceRollAnimation() {
+        return diceRollAnimation;
+    }
+
 }

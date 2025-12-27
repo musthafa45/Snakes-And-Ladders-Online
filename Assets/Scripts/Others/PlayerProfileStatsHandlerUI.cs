@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class PlayerProfileStatsHandlerUI : MonoBehaviour
 {
-    public static PlayerProfileStatsHandlerUI Instance;
+    public static PlayerProfileStatsHandlerUI Instance { get; private set; }
 
     [SerializeField] private GameObject playersProfileStatsParent;
     [SerializeField] private List<PlayerProfileSingleUI> playerProfileSingleUIList; // 0 is Local player, 1 is Opponet Player
@@ -22,17 +22,18 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
     {
         if (localClientId == NetworkManager.Singleton.LocalClientId)
         {
-            Debug.Log($"Moved Client Id {localClientId} is Local Player");
+            Debug.Log($"Moved Player Client Id {localClientId} is Local Player now opponent Player Turn");
 
             playerProfileSingleUIList[0].ButtonInteractableEnabled(false);
             playerProfileSingleUIList[0].SetSelectedVisual(false);
 
-            playerProfileSingleUIList[1].SetSelectedVisual(true);
             playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+            playerProfileSingleUIList[1].SetSelectedVisual(true);
         }
         else
         {
-            Debug.Log($"Moved Client Id {localClientId} Opponent Player");
+            Debug.Log($"Moved Client Id {localClientId} Opponent Player now Local Player Turn");
+
             playerProfileSingleUIList[0].ButtonInteractableEnabled(true);
             playerProfileSingleUIList[0].SetSelectedVisual(true);
 
@@ -79,7 +80,6 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
     {
         Lobby lobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
 
-
         foreach(Player player in lobby.Players)
         {
             Debug.Log("Playing Player Name " + player.Data["PlayerName"].Value + "Player Client Id " + player.Id);
@@ -95,5 +95,9 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
 
         }
         return string.Empty;
+    }
+
+    public void DoOpponentSpin(short selectedFaceValue) {
+        playerProfileSingleUIList[1].GetDiceRollAnimation().PlayOpponentDiceRoll(selectedFaceValue);
     }
 }
