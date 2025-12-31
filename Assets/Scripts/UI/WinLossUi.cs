@@ -1,8 +1,8 @@
+﻿using System;
 using System.Linq;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class WinLossUi : MonoBehaviour
@@ -10,28 +10,78 @@ public class WinLossUi : MonoBehaviour
     [SerializeField] private TextMeshProUGUI winOrLossHeadText;
     [SerializeField] private TextMeshProUGUI matchNameText;
     [SerializeField] private TextMeshProUGUI winOrLossAmountText;
-    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private Button okMenuButton;
     private void Awake()
     {
-        mainMenuButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.Shutdown();
-            SnakesAndLaddersLobby.Instance.LeaveLobby();
-            SceneManager.LoadScene("MainMenu");
-        });
+        okMenuButton.onClick.AddListener(OnOkClicked);
+    }
+
+    private async void OnOkClicked() {
+        okMenuButton.interactable = false;
+
+        // Leave Lobby first
+        if (SnakesAndLaddersLobby.Instance != null && NetworkManager.Singleton.IsClient) {
+            await SnakesAndLaddersLobby.Instance.LeaveLobbyAsync();
+        }
+
+        if (NetworkManager.Singleton.IsHost) {
+            await SnakesAndLaddersLobby.Instance.DeleteLobbyAsync();
+        }
+
+        NetworkManager.Singleton.Shutdown();
+        // Load menu
+        Loader.LoadScene(Loader.Scene.MainMenu);
     }
 
     private void Start()
     {
-        //SnakesAndLaddersMultiplayer.Instance.OnClientDisconnected += SAL_Multiplayer_OnClientDisconnected;
+        if (SnakesAndLaddersMultiplayer.Instance != null) {
+            SnakesAndLaddersMultiplayer.Instance.OnLocalPlayerDisconnected += SAL_Multiplayer_OnLocalPlayerDisconnected;
+            SnakesAndLaddersMultiplayer.Instance.OnRemotePlayerDisconnected += SAL_Multiplayer_OnRemotePlayerDisconnected;
+            SnakesAndLaddersMultiplayer.Instance.OnServerDisconnected += SAL_Multiplayer_OnServerDisconnected;
+        }
+        else {
+            Debug.LogWarning("SnakesAndLaddersMultiplayer.Instance Not Found cant Sub");
+        }
 
-        UiManager.Instance.OnPlayerWonQuickmatch += UiManager_OnPlayerWonQuickmatch;
-        UiManager.Instance.OnPlayerLossQuickMatch += UiManager_OnPlayerLossQuickMatch;
+        if (UiManager.Instance != null) {
+            UiManager.Instance.OnPlayerWonQuickmatch += UiManager_OnPlayerWonQuickmatch;
+            UiManager.Instance.OnPlayerLossQuickMatch += UiManager_OnPlayerLossQuickMatch;
 
-        UiManager.Instance.OnPlayerWonSelectLobbyMatch += UiManager_OnPlayerWonSelectLobbyMatch;
-        UiManager.Instance.OnPlayerLossSelectLobbyMatch += UiManager_OnPlayerLossSelectLobbyMatch;
+            UiManager.Instance.OnPlayerWonSelectLobbyMatch += UiManager_OnPlayerWonSelectLobbyMatch;
+            UiManager.Instance.OnPlayerLossSelectLobbyMatch += UiManager_OnPlayerLossSelectLobbyMatch;
+        }
+        else {
+            Debug.LogWarning("UiManager.Instance Not Found cant Sub");
+        }
+       
         Hide();
 
+    }
+
+   
+
+    private void OnDestroy() {
+        if (SnakesAndLaddersMultiplayer.Instance != null) {
+            SnakesAndLaddersMultiplayer.Instance.OnLocalPlayerDisconnected -= SAL_Multiplayer_OnLocalPlayerDisconnected;
+            SnakesAndLaddersMultiplayer.Instance.OnRemotePlayerDisconnected -= SAL_Multiplayer_OnRemotePlayerDisconnected;
+            SnakesAndLaddersMultiplayer.Instance.OnServerDisconnected += SAL_Multiplayer_OnServerDisconnected;
+        }
+        else {
+            Debug.LogWarning("SnakesAndLaddersMultiplayer.Instance Not Found cant Unsub");
+        }
+
+        if (UiManager.Instance != null) {
+            UiManager.Instance.OnPlayerWonQuickmatch -= UiManager_OnPlayerWonQuickmatch;
+            UiManager.Instance.OnPlayerLossQuickMatch -= UiManager_OnPlayerLossQuickMatch;
+
+            UiManager.Instance.OnPlayerWonSelectLobbyMatch -= UiManager_OnPlayerWonSelectLobbyMatch;
+            UiManager.Instance.OnPlayerLossSelectLobbyMatch -= UiManager_OnPlayerLossSelectLobbyMatch;
+        }
+        else {
+            Debug.LogWarning("UiManager.Instance Not Found cant Unsub");
+        }
+      
     }
 
     private void UiManager_OnPlayerWonSelectLobbyMatch(object sender, UiManager.OnPlayerWonSelectLobbyMatchArgs e)
@@ -41,9 +91,13 @@ public class WinLossUi : MonoBehaviour
         float totalBetAmount = GetTotalBetAmountFromLobbyName(e.lobby.Name);
         PlayerWallet.AddCash(totalBetAmount);
 
-        SetMessageHeadText("You Won");
-        SetMessageMatchName($"You Won {e.lobby.Name}");
-        SetMessageWinOrLossAmount($"You Won {totalBetAmount}");
+        // Winner
+        SetMessageHeadText("You Win!");
+        SetMessageMatchName($"{e.lobby.Name}");
+        SetMessageWinOrLossAmount($"+{totalBetAmount:N0}"); // N0 adds commas for thousands
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
     }
 
 
@@ -53,27 +107,38 @@ public class WinLossUi : MonoBehaviour
 
         float entryAmount = GetEntryBetAmountFromLobbyName(e.lobby.Name);
 
-        SetMessageHeadText("You Loss");
-        SetMessageMatchName($"You Loss {e.lobby.Name}");
-        SetMessageWinOrLossAmount($"You Loss {entryAmount}");
+        // Loser
+        SetMessageHeadText("You Lost");
+        SetMessageMatchName($"{e.lobby.Name}");
+        SetMessageWinOrLossAmount($"-{entryAmount:N0}");
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
     }
 
     private void UiManager_OnPlayerWonQuickmatch(object sender, System.EventArgs e)
     {
         Show();
 
-        SetMessageHeadText("You Won");
-        SetMessageMatchName("You Won Quick Match");
-        SetMessageWinOrLossAmount("You Won 0 Amount");
+        // Winner
+        SetMessageHeadText("You Win!");
+        SetMessageMatchName($"Quick Match");
+        SetMessageWinOrLossAmount($"+{0:N0}"); // N0 adds commas for thousands
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
     }
 
     private void UiManager_OnPlayerLossQuickMatch(object sender, System.EventArgs e)
     {
         Show();
 
-        SetMessageHeadText("You Loss");
-        SetMessageMatchName("You Loss Quick Match");
-        SetMessageWinOrLossAmount("You Loss 0 Amount");
+        SetMessageHeadText("You Loss!");
+        SetMessageMatchName($"Quick Match");
+        SetMessageWinOrLossAmount($"+{0:N0}"); // N0 adds commas for thousands
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
     }
 
     private void Hide()
@@ -107,18 +172,43 @@ public class WinLossUi : MonoBehaviour
         return GameManager.LocalInstance.BetDataSO.BetDataSOList.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
     }
 
-    private void SAL_Multiplayer_OnClientDisconnected(object sender, SnakesAndLaddersMultiplayer.OnClientDisconnectedArgs e)
-    {
+    private void SAL_Multiplayer_OnLocalPlayerDisconnected(object sender, EventArgs e) {
         Show();
 
-        if(e.clientId == NetworkManager.Singleton.LocalClientId)
-        {
-            Debug.Log("Local Client disConnected");
-        }
-        else
-        {
-            Debug.Log("Opponent disConnected");
-        }
+        SetMessageHeadText("Disconnection");
+        SetMessageMatchName($"");
+        SetMessageWinOrLossAmount($"+{-9999:N0}"); 
+
+        Debug.Log("Local Player Disconnected Show Loss UI");
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
+    }
+
+    private void SAL_Multiplayer_OnRemotePlayerDisconnected(object sender, EventArgs e) {
+        Show();
+
+        SetMessageHeadText("Disconnection");
+        SetMessageMatchName($"");
+        SetMessageWinOrLossAmount($"+{99999:N0}");
+
+        Debug.Log("Local Remote Player Disconnected Show Win UI");
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
+    }
+
+    private void SAL_Multiplayer_OnServerDisconnected(object sender, EventArgs e) {
+        Show();
+
+        SetMessageHeadText("Disconnection");
+        SetMessageMatchName($"");
+        SetMessageWinOrLossAmount($"+{0:N0}");
+
+        Debug.Log("Server ShutDown Show Network Disconnection Ui");
+
+        //Disable Dice buttons
+        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
     }
 
     private void SetMessageHeadText(string message)

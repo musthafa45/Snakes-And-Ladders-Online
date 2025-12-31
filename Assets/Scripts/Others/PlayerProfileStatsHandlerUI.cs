@@ -18,6 +18,15 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
         Instance = this;
     }
 
+    private void Start() {
+
+        playerProfileSingleUIList[0].ButtonInteractableEnabled(false);
+        playerProfileSingleUIList[0].SetSelectedVisual(false);
+
+        playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+        playerProfileSingleUIList[1].SetSelectedVisual(false);
+    }
+
     public void OnAnyPlayerMoveDone(ulong localClientId)
     {
         if (localClientId == NetworkManager.Singleton.LocalClientId)
@@ -99,5 +108,14 @@ public class PlayerProfileStatsHandlerUI : MonoBehaviour
 
     public void DoOpponentSpin(short selectedFaceValue) {
         playerProfileSingleUIList[1].GetDiceRollAnimation().PlayOpponentDiceRoll(selectedFaceValue);
+    }
+
+    public void DisableDiceAccess() {
+        //local Player Selected
+        playerProfileSingleUIList[0].ButtonInteractableEnabled(false);
+        playerProfileSingleUIList[0].SetSelectedVisual(false);
+
+        playerProfileSingleUIList[1].ButtonInteractableEnabled(false);
+        playerProfileSingleUIList[1].SetSelectedVisual(false);
     }
 }

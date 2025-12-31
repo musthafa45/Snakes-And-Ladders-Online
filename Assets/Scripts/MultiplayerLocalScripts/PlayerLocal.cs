@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using PathCreation.Examples;
 using System;
 using System.Collections;
@@ -65,7 +65,10 @@ public class PlayerLocal : NetworkBehaviour
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        PlayerProfileSingleUI.OnAnyPlayerPressedRollButton -= PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
+
+        if (IsOwner) {
+            PlayerProfileSingleUI.OnAnyPlayerPressedRollButton-= PlayerProfileSingleUI_OnAnyPlayerPressedRollButton;
+        }
     }
 
     private void PlayerProfileSingleUI_OnAnyPlayerPressedRollButton(short rolledPlayerId, short diceFaceValue)

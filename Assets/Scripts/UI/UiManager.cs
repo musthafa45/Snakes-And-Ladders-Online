@@ -26,12 +26,24 @@ public class UiManager : MonoBehaviour
     {
         Instance = this;
 
-        menuButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.Shutdown();
-            SnakesAndLaddersLobby.Instance.LeaveLobby();
-            Loader.LoadScene(Loader.Scene.MainMenu);
-        });
+        menuButton.onClick.AddListener(OnMenuClicked);
+    }
+
+    private async void OnMenuClicked() {
+        menuButton.interactable = false;
+
+        // Leave Lobby first
+        if (SnakesAndLaddersLobby.Instance != null && NetworkManager.Singleton.IsClient) {
+            await SnakesAndLaddersLobby.Instance.LeaveLobbyAsync();
+        }
+
+        if (NetworkManager.Singleton.IsHost) {
+            await SnakesAndLaddersLobby.Instance.DeleteLobbyAsync();
+        }
+
+        NetworkManager.Singleton.Shutdown();
+        // Load menu
+        Loader.LoadScene(Loader.Scene.MainMenu);
     }
 
     private void Start()
@@ -44,11 +56,13 @@ public class UiManager : MonoBehaviour
         LobbyNameText.text = SnakesAndLaddersLobby.Instance.GetJoinedLobby().Name;
     }
 
-    public void ShowGameFinishedUi(ulong winLocalClientId)
+    public void ShowGameFinishedUi(ulong winnerClientId)
     {
+        Debug.Log($"Winner Client id:- {winnerClientId} And Your Clent Id:- {NetworkManager.Singleton.LocalClientId}");
+
         if (GameManager.LocalInstance.LobbyType == SnakesAndLaddersLobby.LobbyType.QuickMatch)
         {
-            if (winLocalClientId == NetworkManager.Singleton.LocalClientId) // Local Player Won The Match)
+            if (winnerClientId == NetworkManager.Singleton.LocalClientId) // Local Player Won The Match)
             {
                 Debug.Log("You Won Quick Match");
                 OnPlayerWonQuickmatch?.Invoke(this, EventArgs.Empty);
@@ -64,7 +78,7 @@ public class UiManager : MonoBehaviour
         {
             Lobby lobby = GameManager.LocalInstance.JoinedLobby;
 
-            if (winLocalClientId == NetworkManager.Singleton.LocalClientId) // Local Player Won The Match)
+            if (winnerClientId == NetworkManager.Singleton.LocalClientId) // Local Player Won The Match
             {
                 Debug.Log("You Won Select Lobby Match " + lobby.Name);
                 OnPlayerWonSelectLobbyMatch?.Invoke(this, new OnPlayerWonSelectLobbyMatchArgs { lobby = lobby });

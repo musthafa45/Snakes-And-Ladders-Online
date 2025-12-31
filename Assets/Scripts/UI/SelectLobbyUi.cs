@@ -39,12 +39,24 @@ public class SelectLobbyUi : MonoBehaviour
     {
         Instance = this;
 
-        mainMenuButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.Shutdown();
-            SnakesAndLaddersLobby.Instance.LeaveLobby();
-            Loader.LoadScene(Loader.Scene.MainMenu);
-        });
+        mainMenuButton.onClick.AddListener(OnMenuClicked);
+    }
+
+    private async void OnMenuClicked() {
+        mainMenuButton.interactable = false;
+
+        // Leave Lobby first
+        if (SnakesAndLaddersLobby.Instance != null && NetworkManager.Singleton.IsClient) {
+            await SnakesAndLaddersLobby.Instance.LeaveLobbyAsync();
+        }
+
+        if (NetworkManager.Singleton.IsHost) {
+            await SnakesAndLaddersLobby.Instance.DeleteLobbyAsync();
+        }
+
+        NetworkManager.Singleton.Shutdown();
+        // Load menu
+        Loader.LoadScene(Loader.Scene.MainMenu);
     }
 
     private void Start()

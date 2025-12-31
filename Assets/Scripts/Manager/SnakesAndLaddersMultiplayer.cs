@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,14 +6,14 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
 {
     public static SnakesAndLaddersMultiplayer Instance { get; private set; }
 
-    public event EventHandler<OnClientDisconnectedArgs> OnClientDisconnected;
-    public class OnClientDisconnectedArgs : EventArgs
-    {
-        public ulong clientId;
-    }
+    public event EventHandler OnLocalPlayerDisconnected;
+    public event EventHandler OnRemotePlayerDisconnected;
+    public event EventHandler OnServerDisconnected;
 
     public event EventHandler OnPlayerDataNetworkListChanged;
     private NetworkList<PlayerData> playerDataNetworkList;
+
+    public bool IsMatchResultFinalized { get; private set; }
 
     private void Awake()
     {
@@ -30,19 +30,46 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
     }
 
-    private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
-    {
-        //Debug.Log("Client DisConnected "+ clientId);
+    private void NetworkManager_OnClientDisconnectCallback(ulong clientId) {
+        // 1️⃣ If match already decided, ignore all disconnect noise
+        if (IsMatchResultFinalized)
+            return;
 
-        OnClientDisconnected?.Invoke(this, new OnClientDisconnectedArgs
-        {
-            clientId = clientId
-        });
+        bool isLocal = clientId == NetworkManager.Singleton.LocalClientId;
+        bool isServer = NetworkManager.Singleton.IsServer;
+
+        // 2️⃣ CLIENT SIDE: host left → connection lost
+        if (!isServer && isLocal) {
+            Debug.Log("Host disconnected (client lost server)");
+
+            IsMatchResultFinalized = true;
+            OnServerDisconnected?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        // 3️⃣ SERVER SIDE: remote client left → server wins
+        if (isServer && !isLocal) {
+            Debug.Log("Remote client disconnected");
+
+            IsMatchResultFinalized = true;
+            OnRemotePlayerDisconnected?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        // 4️⃣ SERVER shutting down itself (optional safety)
+        if (isServer && isLocal) {
+            Debug.Log("Server shutting down");
+
+            IsMatchResultFinalized = true;
+            OnLocalPlayerDisconnected?.Invoke(this, EventArgs.Empty);
+        }
     }
+
 
     private void PlayerDataNetworkList_OnListChanged(NetworkListEvent<PlayerData> changeEvent)
     {
         OnPlayerDataNetworkListChanged?.Invoke(this, EventArgs.Empty);
+
         if (playerDataNetworkList.Count == 2)
         {
             Debug.Log("Two Players Connected Start Match");
@@ -70,33 +97,23 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
         NetworkManager.Singleton.StartClient();
     }
 
-    //public override void OnDestroy()
-    //{
-    //    NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
-    //}
-    
+    public override void OnDestroy() {
+        if (NetworkManager.Singleton == null) return;
+        NetworkManager.Singleton.OnClientConnectedCallback -= NetworkManager_OnClientConnectedCallback;
+    }
+
 
     [ServerRpc(RequireOwnership = false)]
-    private void ModifyNetWorkDataListRequestServerRpc(ulong clientId, string playerName)
-    {
-        ModifyNetWorkDataListRequestClientRpc(clientId, playerName);
+    private void ModifyNetWorkDataListRequestServerRpc(ulong clientId, string playerName) {
+        playerDataNetworkList.Add(new PlayerData {
+            clientId = clientId,
+            clientName = playerName
+        });
     }
 
-    [ClientRpc]
-    private void ModifyNetWorkDataListRequestClientRpc(ulong clientId, string playerName)
-    {
-        if (IsHost)
-        {
-            playerDataNetworkList.Add(new PlayerData
-            {
-                clientId = clientId,
-                clientName = playerName
-            });
-        }
-    }
 
-    public NetworkList<PlayerData> GetPlayerDataNetWorkList()
-    {
-        return playerDataNetworkList;
-    }
+    //public NetworkList<PlayerData> GetPlayerDataNetWorkList()
+    //{
+    //    return playerDataNetworkList;
+    //}
 }

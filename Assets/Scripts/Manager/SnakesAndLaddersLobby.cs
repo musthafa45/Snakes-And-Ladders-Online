@@ -1,10 +1,9 @@
-using QFSW.QC;
+﻿using QFSW.QC;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using Unity.Networking.Transport.Relay;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Lobbies;
@@ -30,55 +29,86 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
     private Lobby joinedLobby;
 
-    private float lobbyHeartBeatTimer;
+    //private float lobbyHeartBeatTimer;
     private float lobbyHeatBeatTimerMax = 15;
 
-    private float lobbyUpdateTimer;
+    //private float lobbyUpdateTimer;
     private float lobbyUpdateTimerMax = 1.5f;
+
+
+    private float lobbyUpdateTimer;
+    private float lobbyHeartbeatTimer;
 
     private void Awake()
     {
         Instance = this;
+
+        DontDestroyOnLoad(gameObject);
     }
 
-    private async void Start()
-    {
-        try
-        {
+    private async void Start() {
+        try {
             await UnityServices.InitializeAsync();
 
             AuthenticationService.Instance.SignedIn += () =>
             {
-                Debug.Log($"Authendication Success {AuthenticationService.Instance.PlayerId}");
+                Debug.Log($"Authentication Success {AuthenticationService.Instance.PlayerId}");
             };
 
-            if(!AuthenticationService.Instance.IsSignedIn)
-            {
+            if (!AuthenticationService.Instance.IsSignedIn) {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
-           
-            Debug.Log(PlayerPrefs.GetString("PlayerName"));
 
-            InitializeLobbyType();
+            // Add null check for PlayerName
+            string playerName = PlayerPrefs.GetString("PlayerName", "Player");
+            Debug.Log($"Player Name: {playerName}");
+
+           await InitializeLobbyType();
         }
-        catch (LobbyServiceException e)
+        catch (Exception e)  // Catch all exceptions, not just LobbyServiceException
         {
-            Debug.Log(e);
+            Debug.LogError($"Initialization failed: {e}");
         }
     }
-    private async void Update()
-    {
-        if(joinedLobby != null)
-        {
-            await HandleLobbyHeartBeat();
-            await HandleLobbyUpdate();
+
+    private async void OnDestroy() {
+        await LeaveLobbyAsync();
+        // Add these unsubscriptions
+        if (lobbyType == LobbyType.SelectLobby) {
+            if (SelectLobbyUi.Instance != null)
+                SelectLobbyUi.Instance.OnPlayButtonClicked -= SelectLobbyUi_OnPlayButtonClicked;
+
+            if (PrivateLobbyUi.Instance != null) {
+                PrivateLobbyUi.Instance.OnPlayPrivateLobbyCreateClicked -= PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn;
+                PrivateLobbyUi.Instance.OnPlayPrivateLobbyJoinClicked -= PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked;
+            }
         }
     }
-    private void InitializeLobbyType()
+    private async void Update() {
+        if (joinedLobby == null) return;
+
+        // Lobby refresh (all players)
+        lobbyUpdateTimer += Time.deltaTime;
+        if (lobbyUpdateTimer >= lobbyUpdateTimerMax) {
+            lobbyUpdateTimer = 0f;
+            _ = RefreshLobbyAsync();
+        }
+
+        // Heartbeat (HOST ONLY)
+        if (IsLobbyHost()) {
+            lobbyHeartbeatTimer += Time.deltaTime;
+            if (lobbyHeartbeatTimer >= lobbyHeatBeatTimerMax) {
+                lobbyHeartbeatTimer = 0f;
+                _ = SendHeartbeatAsync();
+            }
+        }
+    }
+
+    private async Task InitializeLobbyType()
     {
         if (lobbyType == LobbyType.QuickMatch)
         {
-            CreateOrJoinLobby();
+           await CreateOrJoinLobby();
         }
         else if (lobbyType == LobbyType.SelectLobby)
         {
@@ -87,24 +117,24 @@ public class SnakesAndLaddersLobby : MonoBehaviour
             PrivateLobbyUi.Instance.OnPlayPrivateLobbyJoinClicked += PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked;
         }
     }
-    private void PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked(object sender, PrivateLobbyUi.OnPlayPrivateLobbyJoinClickedArgs e)
+    private async void PrivateLobbyUi_OnPlayPrivateLobbyJoinClicked(object sender, PrivateLobbyUi.OnPlayPrivateLobbyJoinClickedArgs e)
     {
-        JoinPrivateLobby(e.lobbyCode);
+       await JoinPrivateLobby(e.lobbyCode);
     }
-    private void PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn(object sender, PrivateLobbyUi.OnPlayPrivateLobbyCreateClickedArgs e)
+    private async void PrivateLobbyUi_OnPlayerClickedCreatePrivateLobbyBtn(object sender, PrivateLobbyUi.OnPlayPrivateLobbyCreateClickedArgs e)
     {
-        CreatePrivateLobby(e.betData);
+        await CreatePrivateLobby(e.betData);
     }
-    private void SelectLobbyUi_OnPlayButtonClicked(object sender, SelectLobbyUi.OnPlayButtonClickedArgs e)
+    private async void SelectLobbyUi_OnPlayButtonClicked(object sender, SelectLobbyUi.OnPlayButtonClickedArgs e)
     {
         string gameMode = e.betData.GameMode;
 
-        CreateOrJoinLobby(gameMode);
+       await CreateOrJoinLobby(gameMode);
     }
 
 
 
-    private async void CreatePrivateLobby(BetDataSO.BetData betData) {
+    private async Task CreatePrivateLobby(BetDataSO.BetData betData) {
         try {
             // Creating New Lobby With Given details
             int maxPlayer = 2;
@@ -147,7 +177,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
-    private async void JoinPrivateLobby(string lobbyCode) {
+    private async Task JoinPrivateLobby(string lobbyCode) {
         try {
             JoinLobbyByCodeOptions joinLobbyByCodeOptions = new JoinLobbyByCodeOptions {
                 Player = GetPlayer()
@@ -180,30 +210,54 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
-    private async Task HandleLobbyUpdate()
-    {
-        lobbyUpdateTimer += Time.deltaTime;
+    //private async Task HandleLobbyUpdate()
+    //{
+    //    lobbyUpdateTimer += Time.deltaTime;
 
-        if (lobbyUpdateTimer > lobbyUpdateTimerMax)
-        {
-            lobbyUpdateTimer = 0;
-            Lobby updatedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
-            joinedLobby = updatedLobby;
+    //    if (lobbyUpdateTimer > lobbyUpdateTimerMax)
+    //    {
+    //        lobbyUpdateTimer = 0;
+    //        Lobby updatedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+    //        joinedLobby = updatedLobby;
+    //    }
+    //}
+
+    //private async Task HandleLobbyHeartBeat()
+    //{
+    //    lobbyHeartBeatTimer += Time.deltaTime;
+
+    //    if (lobbyHeartBeatTimer > lobbyHeatBeatTimerMax)
+    //    {
+    //        lobbyHeartBeatTimer = 0;
+    //        await LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
+    //    }
+    //}
+
+    private async Task RefreshLobbyAsync() {
+        try {
+            joinedLobby = await LobbyService.Instance.GetLobbyAsync(joinedLobby.Id);
+        }
+        catch (Exception e) {
+            Debug.LogWarning($"Lobby refresh failed: {e.Message}");
         }
     }
 
-    private async Task HandleLobbyHeartBeat()
-    {
-        lobbyHeartBeatTimer += Time.deltaTime;
-
-        if (lobbyHeartBeatTimer > lobbyHeatBeatTimerMax)
-        {
-            lobbyHeartBeatTimer = 0;
+    private async Task SendHeartbeatAsync() {
+        try {
             await LobbyService.Instance.SendHeartbeatPingAsync(joinedLobby.Id);
         }
+        catch (Exception e) {
+            Debug.LogWarning($"Heartbeat failed: {e.Message}");
+        }
     }
 
-    private async void CreateOrJoinLobby() {
+    private bool IsLobbyHost() {
+        return joinedLobby != null &&
+               joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
+    }
+
+
+    private async Task CreateOrJoinLobby() {
         try {
             QueryResponse queryResponse = await GetAvailableLobbies();
 
@@ -276,7 +330,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         }
     }
 
-    public async void DeleteLobby()
+    public async Task DeleteLobbyAsync()
     {
         try
         {
@@ -293,23 +347,36 @@ public class SnakesAndLaddersLobby : MonoBehaviour
 
     }
 
-    public async void LeaveLobby()
-    {
-        try
-        {
-            if (joinedLobby != null)
-            {
-                await LobbyService.Instance.RemovePlayerAsync(joinedLobby.Id, AuthenticationService.Instance.PlayerId);
-                joinedLobby = null;
+
+
+    public async Task LeaveLobbyAsync() {
+        try {
+            if (joinedLobby == null || NetworkManager.Singleton == null) return;
+
+            // HOST leaves → delete lobby
+            if (NetworkManager.Singleton.IsHost) {
+                await LobbyService.Instance.DeleteLobbyAsync(joinedLobby.Id);
+                Debug.Log("Host deleted the lobby");
             }
+            else {
+                // CLIENT leaves -> remove self
+                await LobbyService.Instance.RemovePlayerAsync(
+                    joinedLobby.Id,
+                    AuthenticationService.Instance.PlayerId
+                );
+                Debug.Log("Client left the lobby");
+            }
+
+            joinedLobby = null;
         }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
+        catch (LobbyServiceException e) {
+            Debug.LogWarning($"LeaveLobby failed: {e.Message}");
         }
     }
 
-    private async void CreateOrJoinLobby(string gameMode) {
+
+
+    private async Task CreateOrJoinLobby(string gameMode) {
         try {
             QueryResponse queryResponse = await GetSelectedModeLobbies(gameMode);
             Debug.Log("Selected Mode Lobbies " + gameMode + " Count: " + queryResponse.Results.Count);
@@ -397,7 +464,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
             string relayJoinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             return relayJoinCode;
         }
-        catch (LobbyServiceException e)
+        catch (RelayServiceException e)
         {
             Debug.Log(e);
             return default;
@@ -411,7 +478,7 @@ public class SnakesAndLaddersLobby : MonoBehaviour
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(1);
             return allocation;
         }
-        catch (LobbyServiceException e)
+        catch (RelayServiceException e)
         {
             Debug.Log(e);
             return default;
@@ -514,5 +581,10 @@ public class SnakesAndLaddersLobby : MonoBehaviour
     public LobbyType GetLobbyType()
     {
         return lobbyType;
+    }
+
+
+    private void OnApplicationQuit() {
+        _ = LeaveLobbyAsync();
     }
 }

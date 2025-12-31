@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -33,48 +33,9 @@ public class GameManager : NetworkBehaviour
         if(IsServer)
         {
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
+
     }
-
-    public override void OnDestroy() {
-        if (NetworkManager.Singleton != null) {
-            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
-        }
-    }
-
-    private void OnClientDisconnected(ulong clientId) {
-        Debug.Log($"Client {clientId} disconnected");
-
-        // If only one player remains auto win
-        if (NetworkManager.Singleton.ConnectedClientsIds.Count == 1) {
-            ulong winnerClientId = NetworkManager.Singleton.ConnectedClientsIds[0];
-            Debug.Log($"Player {winnerClientId} wins by disconnect");
-
-            AnnounceWinnerClientRpc(
-                winnerClientId,
-                new ClientRpcParams {
-                    Send = new ClientRpcSendParams {
-                        TargetClientIds = new[] { winnerClientId }
-                    }
-                }
-            );
-        }
-    }
-
-    [ClientRpc]
-    private void AnnounceWinnerClientRpc(
-       ulong winnerClientId,
-       ClientRpcParams clientRpcParams = default) {
-        Debug.Log("YOU WIN! Opponent disconnected.");
-
-        // TODO:
-        // Show Win UI
-        // Disable input
-        // Stop timers
-    }
-
-   
 
     private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
     {
@@ -108,7 +69,7 @@ public class GameManager : NetworkBehaviour
         LobbyType = SnakesAndLaddersLobby.Instance.GetLobbyType();
         JoinedLobby = SnakesAndLaddersLobby.Instance.GetJoinedLobby();
 
-        SnakesAndLaddersLobby.Instance.DeleteLobby();
+        //SnakesAndLaddersLobby.Instance.DeleteLobby();
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -172,15 +133,15 @@ public class GameManager : NetworkBehaviour
         PlayerProfileStatsHandlerUI.Instance.OnAnyPlayerMoveDone(localClientId);
     }
 
-    public void OnPlayerWin(ulong localClientId)
+    public void OnPlayerWin(ulong winnerClientId)
     {
-        SetPlayerWinServerRpc(localClientId);
+        SetPlayerWinServerRpc(winnerClientId);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void SetPlayerWinServerRpc(ulong localClientId)
+    private void SetPlayerWinServerRpc(ulong winnerClientId)
     {
-        SetPlayerWinClientRpc(localClientId);
+        SetPlayerWinClientRpc(winnerClientId);
     }
 
     [ClientRpc]
@@ -218,9 +179,14 @@ public class GameManager : NetworkBehaviour
 
     [ClientRpc]
     private void SendDiceValueToOpponentClientRpc(short diceFaceValue, ClientRpcParams clientRpcParams = default) {
-
-        Debug.Log($"Opponent received dice value: {diceFaceValue}");
         // Run opponent-side animation with SAME value
         PlayerProfileStatsHandlerUI.Instance.DoOpponentSpin(diceFaceValue);
     }
+
+    private async void OnApplicationQuit() {
+        if (SnakesAndLaddersLobby.Instance != null) {
+            await SnakesAndLaddersLobby.Instance.LeaveLobbyAsync();
+        }
+    }
+
 }

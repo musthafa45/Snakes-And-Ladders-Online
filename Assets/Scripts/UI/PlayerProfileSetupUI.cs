@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class PlayerProfileSetupUI : MonoBehaviour
 {
     [SerializeField] private TMP_InputField inputFieldPlayerName;
-    [SerializeField] private Button okButton;
+    [SerializeField] private Button okButton,exitButton;
     [SerializeField] private Transform playerNameSetupUiParent;
 
 
@@ -14,6 +14,10 @@ public class PlayerProfileSetupUI : MonoBehaviour
         okButton.onClick.AddListener(() =>
         {
             PlayerProfileSetup.Instance.SetPlayerName(inputFieldPlayerName.text);
+            Hide();
+        });
+
+        exitButton.onClick.AddListener(() => {
             Hide();
         });
 
