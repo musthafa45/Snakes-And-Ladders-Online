@@ -6,14 +6,16 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
 {
     public static SnakesAndLaddersMultiplayer Instance { get; private set; }
 
-    public event EventHandler OnLocalPlayerDisconnected;
-    public event EventHandler OnRemotePlayerDisconnected;
-    public event EventHandler OnServerDisconnected;
+    public event EventHandler<OnPlayerDisConnectedEventArgs> OnRemotePlayerDisconnected;
+    public event EventHandler<OnPlayerDisConnectedEventArgs> OnServerDisconnected;
+
+    public class OnPlayerDisConnectedEventArgs : EventArgs {
+        public ulong disconnectedClientId; 
+    }
 
     public event EventHandler OnPlayerDataNetworkListChanged;
     private NetworkList<PlayerData> playerDataNetworkList;
 
-    public bool IsMatchResultFinalized { get; private set; }
 
     private void Awake()
     {
@@ -31,9 +33,6 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
     }
 
     private void NetworkManager_OnClientDisconnectCallback(ulong clientId) {
-        // 1️⃣ If match already decided, ignore all disconnect noise
-        if (IsMatchResultFinalized)
-            return;
 
         bool isLocal = clientId == NetworkManager.Singleton.LocalClientId;
         bool isServer = NetworkManager.Singleton.IsServer;
@@ -41,28 +40,17 @@ public class SnakesAndLaddersMultiplayer : NetworkBehaviour
         // 2️⃣ CLIENT SIDE: host left → connection lost
         if (!isServer && isLocal) {
             Debug.Log("Host disconnected (client lost server)");
-
-            IsMatchResultFinalized = true;
-            OnServerDisconnected?.Invoke(this, EventArgs.Empty);
+            OnServerDisconnected?.Invoke(this, new OnPlayerDisConnectedEventArgs { disconnectedClientId = clientId});
             return;
         }
 
         // 3️⃣ SERVER SIDE: remote client left → server wins
         if (isServer && !isLocal) {
             Debug.Log("Remote client disconnected");
-
-            IsMatchResultFinalized = true;
-            OnRemotePlayerDisconnected?.Invoke(this, EventArgs.Empty);
+            OnRemotePlayerDisconnected?.Invoke(this, new OnPlayerDisConnectedEventArgs { disconnectedClientId = clientId });
             return;
         }
 
-        // 4️⃣ SERVER shutting down itself (optional safety)
-        if (isServer && isLocal) {
-            Debug.Log("Server shutting down");
-
-            IsMatchResultFinalized = true;
-            OnLocalPlayerDisconnected?.Invoke(this, EventArgs.Empty);
-        }
     }
 
 

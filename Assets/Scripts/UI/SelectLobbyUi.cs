@@ -74,6 +74,8 @@ public class SelectLobbyUi : MonoBehaviour
                 betData = currentBetData
             });
 
+            playButton.interactable = false;
+
             Hide();
         });
 

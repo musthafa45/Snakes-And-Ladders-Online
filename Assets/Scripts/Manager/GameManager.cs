@@ -189,4 +189,22 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    public void RollTimeoutServerRpc(ServerRpcParams rpcParams = default) {
+        ulong timedOutClientId = rpcParams.Receive.SenderClientId;
+
+        ulong winnerClientId = GetOtherPlayerId(timedOutClientId);
+
+        SetPlayerWinServerRpc(winnerClientId);
+    }
+
+
+    private ulong GetOtherPlayerId(ulong localId) {
+        foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds) {
+            if (clientId != localId)
+                return clientId;
+        }
+        return localId;
+    }
+
 }

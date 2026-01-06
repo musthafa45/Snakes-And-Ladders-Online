@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public static class Loader
 {
     public class DummyClass : MonoBehaviour { }
-    public enum Scene { MainMenu, Loading , QuickLobby , SelectLobby ,Game }
+    public enum Scene { MainMenu, Loading , QuickLobby , SelectLobby ,Game, PlayerVsComputerGame, PassAndPlayGame }
 
     private static Scene toLoadScene;
     private static AsyncOperation loadingAsyncOperation = null;

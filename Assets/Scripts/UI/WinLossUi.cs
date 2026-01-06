@@ -7,12 +7,18 @@ using UnityEngine.UI;
 
 public class WinLossUi : MonoBehaviour
 {
+    public static WinLossUi Instance { get; private set; }
+
     [SerializeField] private TextMeshProUGUI winOrLossHeadText;
     [SerializeField] private TextMeshProUGUI matchNameText;
     [SerializeField] private TextMeshProUGUI winOrLossAmountText;
     [SerializeField] private Button okMenuButton;
+
+    public bool IsMatchResultFinalized { get; private set; }
     private void Awake()
     {
+        Instance = this;
+
         okMenuButton.onClick.AddListener(OnOkClicked);
     }
 
@@ -36,7 +42,6 @@ public class WinLossUi : MonoBehaviour
     private void Start()
     {
         if (SnakesAndLaddersMultiplayer.Instance != null) {
-            SnakesAndLaddersMultiplayer.Instance.OnLocalPlayerDisconnected += SAL_Multiplayer_OnLocalPlayerDisconnected;
             SnakesAndLaddersMultiplayer.Instance.OnRemotePlayerDisconnected += SAL_Multiplayer_OnRemotePlayerDisconnected;
             SnakesAndLaddersMultiplayer.Instance.OnServerDisconnected += SAL_Multiplayer_OnServerDisconnected;
         }
@@ -59,11 +64,8 @@ public class WinLossUi : MonoBehaviour
 
     }
 
-   
-
     private void OnDestroy() {
         if (SnakesAndLaddersMultiplayer.Instance != null) {
-            SnakesAndLaddersMultiplayer.Instance.OnLocalPlayerDisconnected -= SAL_Multiplayer_OnLocalPlayerDisconnected;
             SnakesAndLaddersMultiplayer.Instance.OnRemotePlayerDisconnected -= SAL_Multiplayer_OnRemotePlayerDisconnected;
             SnakesAndLaddersMultiplayer.Instance.OnServerDisconnected += SAL_Multiplayer_OnServerDisconnected;
         }
@@ -84,8 +86,26 @@ public class WinLossUi : MonoBehaviour
       
     }
 
+    private void SAL_Multiplayer_OnRemotePlayerDisconnected(object sender, SnakesAndLaddersMultiplayer.OnPlayerDisConnectedEventArgs e) {
+
+        if (NetworkManager.Singleton.LocalClientId == e.disconnectedClientId) {
+            Debug.Log("Local Player Disconnected Show Loss UI");
+        }
+        else {
+            Debug.Log("Other Player Disconnected Show Win UI");
+
+            GameManager.LocalInstance.OnPlayerWin(NetworkManager.Singleton.LocalClientId);
+        }
+    }
+
+    private void SAL_Multiplayer_OnServerDisconnected(object sender, SnakesAndLaddersMultiplayer.OnPlayerDisConnectedEventArgs e) {
+        UiManager.Instance.InvokeSelectLobbyWon();
+    }
+
     private void UiManager_OnPlayerWonSelectLobbyMatch(object sender, UiManager.OnPlayerWonSelectLobbyMatchArgs e)
     {
+        if (IsMatchResultFinalized) return;
+
         Show();
 
         float totalBetAmount = GetTotalBetAmountFromLobbyName(e.lobby.Name);
@@ -98,11 +118,15 @@ public class WinLossUi : MonoBehaviour
 
         //Disable Dice buttons
         PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
+
+        IsMatchResultFinalized = true;
     }
 
 
     private void UiManager_OnPlayerLossSelectLobbyMatch(object sender, UiManager.OnPlayerLossSelectLobbyMatchArgs e)
     {
+        if (IsMatchResultFinalized) return;
+
         Show();
 
         float entryAmount = GetEntryBetAmountFromLobbyName(e.lobby.Name);
@@ -114,10 +138,14 @@ public class WinLossUi : MonoBehaviour
 
         //Disable Dice buttons
         PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
+
+        IsMatchResultFinalized = true;
     }
 
     private void UiManager_OnPlayerWonQuickmatch(object sender, System.EventArgs e)
     {
+        if (IsMatchResultFinalized) return;
+
         Show();
 
         // Winner
@@ -131,6 +159,8 @@ public class WinLossUi : MonoBehaviour
 
     private void UiManager_OnPlayerLossQuickMatch(object sender, System.EventArgs e)
     {
+        if (IsMatchResultFinalized) return;
+
         Show();
 
         SetMessageHeadText("You Loss!");
@@ -170,45 +200,6 @@ public class WinLossUi : MonoBehaviour
     private float GetEntryBetAmountFromLobbyName(string matchName)
     {
         return GameManager.LocalInstance.BetDataSO.BetDataSOList.Where(betData => betData.GameMode == matchName).FirstOrDefault().EntryAmount;
-    }
-
-    private void SAL_Multiplayer_OnLocalPlayerDisconnected(object sender, EventArgs e) {
-        Show();
-
-        SetMessageHeadText("Disconnection");
-        SetMessageMatchName($"");
-        SetMessageWinOrLossAmount($"+{-9999:N0}"); 
-
-        Debug.Log("Local Player Disconnected Show Loss UI");
-
-        //Disable Dice buttons
-        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
-    }
-
-    private void SAL_Multiplayer_OnRemotePlayerDisconnected(object sender, EventArgs e) {
-        Show();
-
-        SetMessageHeadText("Disconnection");
-        SetMessageMatchName($"");
-        SetMessageWinOrLossAmount($"+{99999:N0}");
-
-        Debug.Log("Local Remote Player Disconnected Show Win UI");
-
-        //Disable Dice buttons
-        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
-    }
-
-    private void SAL_Multiplayer_OnServerDisconnected(object sender, EventArgs e) {
-        Show();
-
-        SetMessageHeadText("Disconnection");
-        SetMessageMatchName($"");
-        SetMessageWinOrLossAmount($"+{0:N0}");
-
-        Debug.Log("Server ShutDown Show Network Disconnection Ui");
-
-        //Disable Dice buttons
-        PlayerProfileStatsHandlerUI.Instance.DisableDiceAccess();
     }
 
     private void SetMessageHeadText(string message)

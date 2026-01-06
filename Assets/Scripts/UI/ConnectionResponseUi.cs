@@ -23,6 +23,8 @@ public class ConnectionResponseUi : MonoBehaviour
     private void SnakesAndLaddersLobby_OnPrivateLobbyJoinFailed(object sender, System.EventArgs e)
     {
         Show();
+
+        SetConnectionResponseMsg("Private Lobby Join Failed");
     }
 
     public void SetConnectionResponseMsg(string msg)

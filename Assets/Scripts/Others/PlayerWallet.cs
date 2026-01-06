@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class PlayerWallet {
     private const string CASH_AMOUNT_KEY = "cashAmount";
-    private const float DEFAULT_CASH = 99999f;
+    private const float DEFAULT_CASH = 2000f;
 
     public static event EventHandler<OnPlayerWalletModifiedArgs> OnPlayerWalletModified;
 

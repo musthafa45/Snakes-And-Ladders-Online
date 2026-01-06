@@ -19,33 +19,24 @@ public class UiManager : MonoBehaviour
     public class OnPlayerWonSelectLobbyMatchArgs : EventArgs { public Lobby lobby; }
     public class OnPlayerLossSelectLobbyMatchArgs : EventArgs { public Lobby lobby; }
 
-
-    [SerializeField] private Button menuButton;
+    
     [SerializeField] private TextMeshProUGUI LobbyNameText;
+    [SerializeField] private Transform exitConfirmUiTransform;
+    [SerializeField] private Button menuButton;
+
     private void Awake()
     {
         Instance = this;
 
-        menuButton.onClick.AddListener(OnMenuClicked);
+        menuButton.onClick.AddListener(() => {
+            exitConfirmUiTransform.gameObject.SetActive(true);
+            menuButton.gameObject.SetActive(false);
+        });
+
+        exitConfirmUiTransform.gameObject.SetActive(false);
     }
 
-    private async void OnMenuClicked() {
-        menuButton.interactable = false;
-
-        // Leave Lobby first
-        if (SnakesAndLaddersLobby.Instance != null && NetworkManager.Singleton.IsClient) {
-            await SnakesAndLaddersLobby.Instance.LeaveLobbyAsync();
-        }
-
-        if (NetworkManager.Singleton.IsHost) {
-            await SnakesAndLaddersLobby.Instance.DeleteLobbyAsync();
-        }
-
-        NetworkManager.Singleton.Shutdown();
-        // Load menu
-        Loader.LoadScene(Loader.Scene.MainMenu);
-    }
-
+   
     private void Start()
     {
         SetLobbyName();
@@ -90,6 +81,13 @@ public class UiManager : MonoBehaviour
             }
            
         }
+    }
+
+    public void InvokeSelectLobbyWon() {
+        Lobby lobby = GameManager.LocalInstance.JoinedLobby;
+
+        Debug.Log("You Won Select Lobby Match " + lobby.Name);
+        OnPlayerWonSelectLobbyMatch?.Invoke(this, new OnPlayerWonSelectLobbyMatchArgs { lobby = lobby });
     }
 }
 

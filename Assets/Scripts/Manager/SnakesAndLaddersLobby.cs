@@ -129,7 +129,13 @@ public class SnakesAndLaddersLobby : MonoBehaviour
     {
         string gameMode = e.betData.GameMode;
 
-       await CreateOrJoinLobby(gameMode);
+        bool success = await CreateOrJoinLobbyWithTimeout(gameMode, 20);
+
+        if (!success) {
+            Debug.Log("Lobby connection failed (timeout)");
+            ConnectionResponseUi.Instance.Show();
+            ConnectionResponseUi.Instance.SetConnectionResponseMsg("No opponents found. Try again.");
+        }
     }
 
 
@@ -255,6 +261,49 @@ public class SnakesAndLaddersLobby : MonoBehaviour
         return joinedLobby != null &&
                joinedLobby.HostId == AuthenticationService.Instance.PlayerId;
     }
+
+    private async Task<bool> CreateOrJoinLobbyWithTimeout(string gameMode, int timeoutSeconds) {
+        Task lobbyTask = CreateOrJoinLobby(gameMode);
+        Task timeoutTask = Task.Delay(timeoutSeconds * 1000);
+
+        Task completedTask = await Task.WhenAny(lobbyTask, timeoutTask);
+
+        if (completedTask == timeoutTask) {
+            HandleLobbyTimeout();
+            return false;
+        }
+
+        // If lobby task finished, check if network actually connected
+        await lobbyTask;
+
+        return NetworkManager.Singleton.IsClient || NetworkManager.Singleton.IsHost;
+    }
+
+    private async void HandleLobbyTimeout() {
+        Debug.LogWarning("Lobby / Relay connection timed out");
+
+        // Shutdown Netcode
+        if (NetworkManager.Singleton != null) {
+            NetworkManager.Singleton.Shutdown();
+        }
+
+        // Leave lobby if joined
+        if (joinedLobby != null) {
+            try {
+                await LobbyService.Instance.RemovePlayerAsync(
+                    joinedLobby.Id,
+                    AuthenticationService.Instance.PlayerId
+                );
+            }
+            catch (Exception ex) {
+                Debug.LogWarning("Failed to leave lobby: " + ex.Message);
+            }
+
+            joinedLobby = null;
+        }
+    }
+
+
 
 
     private async Task CreateOrJoinLobby() {

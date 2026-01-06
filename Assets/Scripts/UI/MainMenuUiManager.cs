@@ -5,7 +5,7 @@ public class MainMenuUiManager : MonoBehaviour
 {
     [SerializeField] private Button muliplayerQuickMatchButton;
     [SerializeField] private Button muliplayerSelectLobbyButton;
-    [SerializeField] private Button multiplayerLocalButton;
+    [SerializeField] private Button multiplayerPassAndPlayButton;
     [SerializeField] private Button multiplayerComputerButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private TextMeshProUGUI versionTextmeshPro;
@@ -22,14 +22,14 @@ public class MainMenuUiManager : MonoBehaviour
             Loader.LoadScene(Loader.Scene.SelectLobby);
         });
 
-        multiplayerLocalButton.onClick.AddListener(() =>
-        {
-            
-        });
-
         multiplayerComputerButton.onClick.AddListener(() =>
         {
-            
+            Loader.LoadScene(Loader.Scene.PlayerVsComputerGame);
+        });
+
+        multiplayerPassAndPlayButton.onClick.AddListener(() =>
+        {
+            Loader.LoadScene(Loader.Scene.PassAndPlayGame);
         });
 
         settingsButton.onClick.AddListener(() => {

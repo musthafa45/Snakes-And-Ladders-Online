@@ -888,14 +888,14 @@ RectTransform:
   m_Children:
   - {fileID: 1488204916}
   - {fileID: 215841253}
-  - {fileID: 1168005019}
   - {fileID: 790929363}
+  - {fileID: 1168005019}
   m_Father: {fileID: 868597983}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: -160.00002, y: -700.0001}
+  m_AnchoredPosition: {x: 0, y: -0}
+  m_SizeDelta: {x: -160, y: -1015.3517}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &249005192
 MonoBehaviour:
@@ -982,7 +982,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Multiplayer
 
-    (Local)'
+    (Pass & Play)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
@@ -2107,13 +2107,13 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.8156863}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2127,7 +2127,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 790929365}
   m_OnClick:
     m_PersistentCalls:
@@ -2559,7 +2559,7 @@ GameObject:
   - component: {fileID: 1168005021}
   - component: {fileID: 1168005020}
   m_Layer: 5
-  m_Name: Button Local
+  m_Name: Button Pass And play
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2604,13 +2604,13 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.8156863}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -2624,7 +2624,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1168005021}
   m_OnClick:
     m_PersistentCalls:
@@ -4326,7 +4326,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1488204916
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4342,9 +4342,9 @@ RectTransform:
   - {fileID: 451925290}
   m_Father: {fileID: 249005191}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 460, y: -144.99998}
   m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1488204917
@@ -4987,7 +4987,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   muliplayerQuickMatchButton: {fileID: 1488204917}
   muliplayerSelectLobbyButton: {fileID: 215841254}
-  multiplayerLocalButton: {fileID: 1168005020}
+  multiplayerPassAndPlayButton: {fileID: 1168005020}
   multiplayerComputerButton: {fileID: 790929364}
   settingsButton: {fileID: 1227543555}
   versionTextmeshPro: {fileID: 765458409}
